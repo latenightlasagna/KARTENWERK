@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KARTENWERK — Print-Ready Playing Card Engine</title>
   
+  <!-- Red Heart Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%23d91b1b%22>♥</text></svg>">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -71,6 +74,15 @@
       60% { transform: rotate(2deg) translateX(1px); }
       75% { transform: rotate(-1deg) translateX(0); }
     }
+    
+    .spec-sheet { background: #e4e4e7; border: 1px solid var(--border-subtle); border-radius: 4px; padding: 10px 12px; margin-bottom: 12px; }
+    .spec-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+    .spec-title { font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; color: var(--text-main); }
+    .spec-list { list-style: none; padding: 0; margin: 0; }
+    .spec-list li { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; display: flex; align-items: flex-start; gap: 6px; }
+    .spec-list li::before { content: '•'; color: var(--accent); }
+    .spec-list strong { color: var(--text-main); font-weight: 500; }
+
     .help-btn { display: inline-block; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); cursor: pointer; transition: color 0.15s ease; white-space: nowrap; text-decoration: underline; text-underline-offset: 2px; }
     .help-btn:hover { color: var(--accent); }
     .help-btn.error-state { color: var(--status-missing); animation: organic-wiggle 0.4s ease-in-out; }
@@ -86,7 +98,7 @@
     .drop-label { font-size: 10px; color: var(--text-main); }
     
     .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+    .grid-dynamic { display: grid; gap: 6px; margin-bottom: 8px; }
     
     .drop-card { border: 1px dashed var(--border-subtle); border-radius: 2px; padding: 8px 4px; text-align: center; background: var(--bg-input); cursor: pointer; font-family: var(--font-mono); font-size: 9px; transition: all 0.15s ease; }
     .drop-card.has-file { border-color: var(--status-done); color: var(--status-done); background: rgba(16, 185, 129, 0.05); }
@@ -121,10 +133,10 @@
 </head>
 <body>
 
-  <!-- PIP Global Overlay[cite: 2] -->
+  <!-- PIP Global Overlay -->
   <div id="pip-modal" class="pip-overlay">
     <div class="pip-content">
-      <img src="psd_setup_help.png" alt="Setup Guide">
+      <img id="pip-img" src="psd_setup_help.png" alt="Setup Guide">
     </div>
   </div>
 
@@ -205,17 +217,17 @@
           </div>
           <div class="field-row four-cols">
             <div><label>Top</label><input type="number" id="bleed-t" value="3.0" step="0.5"></div>
-            <div><label>Bot</label><input type="number" id="bleed-b" value="3.0" step="0.5"></div>
-            <div><label>In</label><input type="number" id="bleed-l" value="3.0" step="0.5"></div>
-            <div><label>Out</label><input type="number" id="bleed-r" value="3.0" step="0.5"></div>
+            <div><label>Bottom</label><input type="number" id="bleed-b" value="3.0" step="0.5"></div>
+            <div><label>Left</label><input type="number" id="bleed-l" value="3.0" step="0.5"></div>
+            <div><label>Right</label><input type="number" id="bleed-r" value="3.0" step="0.5"></div>
           </div>
 
           <label style="margin-top: 8px;">Margin Box (Safe Print Area)</label>
           <div class="field-row four-cols">
             <div><label>Top</label><input type="number" id="margin-t" value="4.0" step="0.5"></div>
-            <div><label>Bot</label><input type="number" id="margin-b" value="4.0" step="0.5"></div>
-            <div><label>In</label><input type="number" id="margin-l" value="4.0" step="0.5"></div>
-            <div><label>Out</label><input type="number" id="margin-r" value="4.0" step="0.5"></div>
+            <div><label>Bottom</label><input type="number" id="margin-b" value="4.0" step="0.5"></div>
+            <div><label>Left</label><input type="number" id="margin-l" value="4.0" step="0.5"></div>
+            <div><label>Right</label><input type="number" id="margin-r" value="4.0" step="0.5"></div>
           </div>
         </div>
       </section>
@@ -231,19 +243,25 @@
         </div>
         <div class="accordion-content">
           
-          <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;">
-            <span style="flex:1;"><strong>Indices Format:</strong> Provide a 1:1 Square Format (e.g., 512×512px) with artwork centered and touching the outer borders. Alpha Channel Required.</span>
-            <span id="help-btn" class="help-btn">Setup Guide</span>
+          <!-- Spec Sheet 1 -->
+          <div class="spec-sheet">
+            <div class="spec-header">
+              <span class="spec-title">Indices & Suits Specs</span>
+              <span id="help-btn-indices" class="help-btn" onclick="openPip('psd_setup_help.png', 'help-btn-indices')">Setup Guide</span>
+            </div>
+            <ul class="spec-list">
+              <li><strong>Aspect Ratio:</strong> 1:1 Square (e.g., 512×512px)</li>
+              <li><strong>Layout:</strong> Artwork exactly centered, touching borders</li>
+              <li><strong>Background:</strong> Transparent Alpha Channel Required</li>
+            </ul>
           </div>
 
-          <!-- Indices Drop -->
           <div class="drop-zone" id="drop-numbers">
             <div style="font-size: 14px; margin-bottom: 2px;">↓</div>
             <div class="drop-label"><strong>Drop Value Indices</strong> (01.png...10.png, B, D, K, A)</div>
             <input type="file" id="input-numbers" multiple accept="image/png" style="display: none;">
           </div>
 
-          <!-- Suit Drop -->
           <label>Four Suit Symbols</label>
           <div class="grid-4">
             <div class="drop-card suit-drop" data-suit="hearts">♥ HEARTS</div>
@@ -255,25 +273,44 @@
 
           <div class="divider"></div>
 
-          <!-- Court Drop -->
-          <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5;">
-            <strong>Court Art Format:</strong> Artwork must be in portrait orientation. Perfect Size: <strong>825×1125px</strong> (2.75×3.75 inches at 300 DPI). Alpha Channel Required.
+          <!-- Spec Sheet 2 -->
+          <div class="spec-sheet">
+            <div class="spec-header">
+              <span class="spec-title">Court / Face Artworks Specs</span>
+              <span id="help-btn-court" class="help-btn" onclick="openPip('psd_setup_help_02.png', 'help-btn-court')">Setup Guide</span>
+            </div>
+            <ul class="spec-list">
+              <li><strong>Aspect Ratio:</strong> Portrait Geometry</li>
+              <li><strong>Resolution:</strong> 825 × 1125 px (300 DPI target)</li>
+              <li><strong>Background:</strong> Transparent Alpha Channel Required</li>
+            </ul>
           </div>
           
-          <label style="display:flex; justify-content: space-between;">
-            Face / Court Artworks
+          <div style="display:flex; justify-content: space-between; margin-bottom: 6px;">
+            <label style="margin:0;">Face / Court Artworks</label>
+          </div>
+          <div style="display:flex; flex-direction: column; gap: 4px; margin-bottom: 12px;">
             <label class="checkbox-wrap" style="margin:0; font-weight: normal;">
-              <input type="checkbox" id="toggle-custom-ace"><span>Custom Ace</span>
+              <input type="checkbox" id="toggle-custom-ace"><span>Enable Custom Ace Artworks</span>
             </label>
-          </label>
+            <label class="checkbox-wrap" style="margin:0; font-weight: normal;">
+              <input type="checkbox" id="toggle-individual-courts"><span>Enable individual artworks per Colour (Suit)</span>
+            </label>
+          </div>
           
-          <div class="grid-4" id="court-grid">
-            <div class="drop-card court-drop" data-court="B">JACK (B)</div>
-            <div class="drop-card court-drop" data-court="D">QUEEN (D)</div>
-            <div class="drop-card court-drop" data-court="K">KING (K)</div>
-            <div class="drop-card court-drop" data-court="A" id="drop-court-a" style="display:none;">ACE (A)</div>
+          <div class="grid-dynamic" id="court-grid">
+            <!-- Dynamically populated via JS based on toggles -->
           </div>
           <input type="file" id="input-court-single" accept="image/png" style="display:none;">
+
+          <!-- Dynamic Joker Drop Zone -->
+          <div id="joker-upload-section" style="display:none;">
+            <div class="divider"></div>
+            <div class="drop-zone" id="drop-joker-zone" style="margin-bottom: 12px; border-color: var(--accent);">
+              <div class="drop-label"><strong>Drop Joker Artwork</strong> (joker.png)</div>
+              <input type="file" id="input-joker" accept="image/png" style="display: none;">
+            </div>
+          </div>
 
           <div class="divider"></div>
 
@@ -391,27 +428,33 @@
       margin: { top: 4.0, bottom: 4.0, left: 4.0, right: 4.0 },
       linkedBleed: true,
       deckMode: 'preset', presetDeck: 'french-52', cardCount: 52,
-      addJokers: false, jokerCount: 2, addBacks: true, customAce: false,
+      addJokers: false, jokerCount: 2, addBacks: true, 
+      customAce: false, individualCourts: false,
       activeCardIndex: 0,
       
-      suitImages: {}, rankImages: {}, courtImages: {}, backImage: null,
+      suitImages: {}, rankImages: {}, 
+      courtImages: { global: {}, hearts: {}, diamonds: {}, spades: {}, clubs: {} }, 
+      backImage: null,
       zoom: 1.0, panX: 0, panY: 0, isPanning: false, startX: 0, startY: 0,
       isPreflight: false
     };
 
     let deckCards = [];
 
-    // PIP Setup Guide Logic[cite: 2]
-    const helpBtn = document.getElementById('help-btn');
+    // PIP Setup Guide Logic
     const pipModal = document.getElementById('pip-modal');
-    
-    helpBtn.addEventListener('click', () => pipModal.classList.add('active'));
+    function openPip(src, btnId) {
+      document.getElementById('pip-img').src = src;
+      pipModal.classList.add('active');
+    }
     pipModal.addEventListener('click', (e) => { if (e.target === pipModal) pipModal.classList.remove('active'); });
 
-    function triggerHelpError() {
-      helpBtn.classList.remove('error-state');
-      void helpBtn.offsetWidth; 
-      helpBtn.classList.add('error-state');
+    function triggerHelpError(btnId) {
+      const btn = document.getElementById(btnId);
+      if(!btn) return;
+      btn.classList.remove('error-state');
+      void btn.offsetWidth; 
+      btn.classList.add('error-state');
     }
 
     function validateAsset(img) {
@@ -433,32 +476,20 @@
       const rulerSize = 16;
       const dpr = window.devicePixelRatio || 1;
       
-      // Reset transform to draw natively in UI screen space
       c.setTransform(dpr, 0, 0, dpr, 0, 0);
-      
-      // Draw background tracks
       c.fillStyle = 'var(--bg-panel)'; 
-      c.fillRect(0, 0, w, rulerSize); 
-      c.fillRect(0, 0, rulerSize, h);
-      
-      // Border Lines
+      c.fillRect(0, 0, w, rulerSize); c.fillRect(0, 0, rulerSize, h);
       c.strokeStyle = 'var(--border-strong)'; c.lineWidth = 1;
-      c.beginPath(); 
-      c.moveTo(0, rulerSize); c.lineTo(w, rulerSize); 
-      c.moveTo(rulerSize, 0); c.lineTo(rulerSize, h); 
-      c.stroke();
+      c.beginPath(); c.moveTo(0, rulerSize); c.lineTo(w, rulerSize); c.moveTo(rulerSize, 0); c.lineTo(rulerSize, h); c.stroke();
 
-      c.fillStyle = 'var(--text-dim)'; 
-      c.font = '9px var(--font-mono)'; 
+      c.fillStyle = 'var(--text-dim)'; c.font = '9px var(--font-mono)'; 
 
-      // Matrix calculations mapping Canvas Center to Trim Box Top-Left Origin (0,0)
       const cx = w / 2 + state.panX;
       const cy = h / 2 + state.panY;
       const originX = cx - (state.cardW / 2) * MM_TO_BASE_PX * state.zoom;
       const originY = cy - (state.cardH / 2) * MM_TO_BASE_PX * state.zoom;
       const pxPerMm = MM_TO_BASE_PX * state.zoom;
       
-      // Dynamic scaling step to prevent black overlapping lines
       let step = 1;
       if (pxPerMm < 2) step = 20;
       else if (pxPerMm < 4) step = 10;
@@ -468,17 +499,13 @@
       // X Ruler
       const startMmMx = Math.floor(-originX / pxPerMm);
       const endMmMx = Math.ceil((w - originX) / pxPerMm);
-      
       c.beginPath();
       for(let mm = startMmMx; mm <= endMmMx; mm++) {
         if (mm % step !== 0) continue;
         const screenX = originX + (mm * pxPerMm);
         if (screenX < rulerSize) continue;
-        
         let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
-        c.moveTo(screenX, rulerSize - tickLength); 
-        c.lineTo(screenX, rulerSize);
-        
+        c.moveTo(screenX, rulerSize - tickLength); c.lineTo(screenX, rulerSize);
         if (mm % 10 === 0 && (step <= 10 || mm % 20 === 0)) {
           c.textAlign = 'center'; c.textBaseline = 'top';
           c.fillText(mm, screenX, 2);
@@ -489,28 +516,19 @@
       // Y Ruler
       const startMmMy = Math.floor(-originY / pxPerMm);
       const endMmMy = Math.ceil((h - originY) / pxPerMm);
-      
       c.beginPath();
       for(let mm = startMmMy; mm <= endMmMy; mm++) {
         if (mm % step !== 0) continue;
         const screenY = originY + (mm * pxPerMm);
         if (screenY < rulerSize) continue;
-        
         let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
-        c.moveTo(rulerSize - tickLength, screenY); 
-        c.lineTo(rulerSize, screenY);
-        
+        c.moveTo(rulerSize - tickLength, screenY); c.lineTo(rulerSize, screenY);
         if (mm % 10 === 0 && (step <= 10 || mm % 20 === 0)) {
-          c.save(); 
-          c.translate(2, screenY); c.rotate(-Math.PI/2); 
-          c.textAlign = 'center'; c.textBaseline = 'top';
-          c.fillText(mm, 0, 0); 
-          c.restore();
+          c.save(); c.translate(2, screenY); c.rotate(-Math.PI/2); c.textAlign = 'center'; c.textBaseline = 'top'; c.fillText(mm, 0, 0); c.restore();
         }
       }
       c.stroke();
       
-      // Zero Origin Corner Block
       c.fillStyle = 'var(--bg-panel)'; c.fillRect(0, 0, rulerSize, rulerSize); 
       c.strokeStyle = 'var(--border-strong)'; c.strokeRect(0, 0, rulerSize, rulerSize);
       c.restore();
@@ -608,17 +626,33 @@
       drawCropMarks(c, startX, startY, wPx, hPx);
 
       const safeW = wPx - mgL - mgR, safeH = hPx - mgTop - mgBot, safeX = startX + mgL, safeY = startY + mgTop;
-      const suitObj = SUITS.find(s => s.id === card.suit), pad = layout.valSnap ? 0 : (2 * MM_TO_BASE_PX);
+      const suitObj = SUITS.find(s => s.id === card.suit) || SUITS[2]; // fallback to hearts for Jokers
+      const pad = layout.valSnap ? 0 : (2 * MM_TO_BASE_PX);
 
-      drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + pad, 0, false, layout);
-      drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + pad, 0, true, layout);
-      drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + safeH - pad, Math.PI, true, layout);
-      drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + safeH - pad, Math.PI, false, layout);
+      // Indices layer
+      if (card.rank !== 'JOKER') {
+        drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + pad, 0, false, layout);
+        drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + pad, 0, true, layout);
+        drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + safeH - pad, Math.PI, true, layout);
+        drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + safeH - pad, Math.PI, false, layout);
+      }
 
-      // Custom Court Art Render Intercept
-      if (['B', 'D', 'K', 'A'].includes(card.rank) && state.courtImages[card.rank]) {
-        // Fallback to strict safe area drawing if custom image is loaded
-        c.drawImage(state.courtImages[card.rank], safeX, safeY, safeW, safeH);
+      // Main Artwork Compositing layer
+      let customImg = null;
+      let isCourtOrAce = ['B', 'D', 'K', 'A'].includes(card.rank);
+
+      if (card.rank === 'JOKER') {
+        customImg = state.rankImages['JOKER'];
+      } else if (isCourtOrAce) {
+        if (state.individualCourts && state.courtImages[card.suit] && state.courtImages[card.suit][card.rank]) {
+          customImg = state.courtImages[card.suit][card.rank];
+        } else if (!state.individualCourts && state.courtImages['global'][card.rank]) {
+          customImg = state.courtImages['global'][card.rank];
+        }
+      }
+
+      if (customImg) {
+        c.drawImage(customImg, safeX, safeY, safeW, safeH);
       } else if (['B', 'D', 'K', 'JOKER'].includes(card.rank)) {
         drawCourtArt(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout);
       } else if (PIP_LAYOUTS[card.rank]) {
@@ -699,19 +733,47 @@
     document.getElementById('deck-mode').addEventListener('change', (e) => { state.deckMode = e.target.value; document.getElementById('deck-preset-wrap').style.display = e.target.value === 'preset' ? 'block' : 'none'; document.getElementById('deck-count-wrap').style.display = e.target.value === 'count' ? 'block' : 'none'; rebuildDeckList(); });
     document.getElementById('deck-preset-select').addEventListener('change', (e) => { state.presetDeck = e.target.value; rebuildDeckList(); });
     document.getElementById('deck-count-input').addEventListener('input', (e) => { state.cardCount = parseInt(e.target.value) || 1; rebuildDeckList(); });
-    document.getElementById('toggle-joker').addEventListener('change', (e) => { state.addJokers = e.target.checked; document.getElementById('joker-slider-wrap').style.display = e.target.checked ? 'block' : 'none'; rebuildDeckList(); });
+    
+    document.getElementById('toggle-joker').addEventListener('change', (e) => { 
+      state.addJokers = e.target.checked; 
+      document.getElementById('joker-slider-wrap').style.display = state.addJokers ? 'block' : 'none'; 
+      document.getElementById('joker-upload-section').style.display = state.addJokers ? 'block' : 'none'; 
+      rebuildDeckList(); 
+    });
     document.getElementById('joker-range').addEventListener('input', (e) => { state.jokerCount = parseInt(e.target.value); document.getElementById('joker-val').innerText = state.jokerCount; rebuildDeckList(); });
     document.getElementById('toggle-backs').addEventListener('change', (e) => { state.addBacks = e.target.checked; rebuildDeckList(); });
     
-    // Toggle Custom Ace
+    // Dynamic Court Grid Construction
+    function renderCourtGridUI() {
+      const grid = document.getElementById('court-grid');
+      grid.innerHTML = '';
+      const ranks = state.customAce ? ['B', 'D', 'K', 'A'] : ['B', 'D', 'K'];
+      grid.style.gridTemplateColumns = `repeat(${ranks.length}, 1fr)`;
+
+      if (state.individualCourts) {
+        SUITS.forEach(suit => {
+          ranks.forEach(rank => {
+            const hasFile = state.courtImages[suit.id][rank];
+            grid.innerHTML += `<div class="drop-card court-drop ${hasFile ? 'has-file':''}" data-court="${rank}" data-suit="${suit.id}" style="color:${hasFile?'':suit.color}">${suit.symbol} ${rank}</div>`;
+          });
+        });
+      } else {
+        ranks.forEach(rank => {
+          const hasFile = state.courtImages['global'][rank];
+          grid.innerHTML += `<div class="drop-card court-drop ${hasFile ? 'has-file':''}" data-court="${rank}" data-suit="global">ALL ${rank}</div>`;
+        });
+      }
+      render();
+    }
+
     document.getElementById('toggle-custom-ace').addEventListener('change', (e) => {
       state.customAce = e.target.checked;
-      document.getElementById('drop-court-a').style.display = state.customAce ? 'block' : 'none';
-      if(!state.customAce) {
-        state.courtImages['A'] = null;
-        document.getElementById('drop-court-a').classList.remove('has-file');
-        render();
-      }
+      renderCourtGridUI();
+    });
+
+    document.getElementById('toggle-individual-courts').addEventListener('change', (e) => {
+      state.individualCourts = e.target.checked;
+      renderCourtGridUI();
     });
 
     const chainBtn = document.getElementById('chain-lock');
@@ -741,7 +803,7 @@
         reader.onload = (ev) => {
           const img = new Image();
           img.onload = () => {
-            if (!validateAsset(img)) { triggerHelpError(); return; }
+            if (!validateAsset(img)) { triggerHelpError('help-btn-indices'); return; }
             let matchedRank = name;
             if (name === '01' || name === '1') matchedRank = 'A';
             if (name.startsWith('0')) matchedRank = name.replace('0', '');
@@ -768,7 +830,7 @@
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          if (!validateAsset(img)) { triggerHelpError(); return; }
+          if (!validateAsset(img)) { triggerHelpError('help-btn-indices'); return; }
           state.suitImages[suit] = img; 
           document.querySelector(`.suit-drop[data-suit="${suit}"]`).classList.add('has-file'); 
           refreshAssetInventory(); render();
@@ -776,34 +838,68 @@
       }; reader.readAsDataURL(file);
     }
     
-    // Courts Logic
-    let activeCourtTarget = null;
-    document.querySelectorAll('.court-drop').forEach(card => {
-      const court = card.dataset.court;
-      card.addEventListener('click', () => { activeCourtTarget = court; document.getElementById('input-court-single').click(); });
-      card.addEventListener('dragover', (e) => { e.preventDefault(); card.style.borderColor = 'var(--accent)'; });
-      card.addEventListener('dragleave', () => { card.style.borderColor = ''; });
-      card.addEventListener('drop', (e) => { e.preventDefault(); card.style.borderColor = ''; if (e.dataTransfer.files[0]) loadCourtFile(court, e.dataTransfer.files[0]); });
-    });
-    document.getElementById('input-court-single').addEventListener('change', (e) => { if (e.target.files[0] && activeCourtTarget) loadCourtFile(activeCourtTarget, e.target.files[0]); });
+    // Joker Logic
+    const dropJokerZone = document.getElementById('drop-joker-zone');
+    const inputJoker = document.getElementById('input-joker');
+    dropJokerZone.addEventListener('click', () => inputJoker.click());
+    dropJokerZone.addEventListener('dragover', (e) => { e.preventDefault(); dropJokerZone.classList.add('dragover'); });
+    dropJokerZone.addEventListener('dragleave', () => dropJokerZone.classList.remove('dragover'));
+    dropJokerZone.addEventListener('drop', (e) => { e.preventDefault(); dropJokerZone.classList.remove('dragover'); if(e.dataTransfer.files[0]) loadJokerFile(e.dataTransfer.files[0]); });
+    inputJoker.addEventListener('change', (e) => { if (e.target.files[0]) loadJokerFile(e.target.files[0]); });
 
-    function loadCourtFile(court, file) {
+    function loadJokerFile(file) {
       if (!file.type.includes('png')) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          if (!validateCourtAsset(img)) { alert("Court Artwork requires a portrait format."); return; }
-          state.courtImages[court] = img; 
-          document.querySelector(`.court-drop[data-court="${court}"]`).classList.add('has-file'); 
-          render();
+          if (!validateCourtAsset(img)) { triggerHelpError('help-btn-court'); return; }
+          state.rankImages['JOKER'] = img;
+          refreshAssetInventory(); render();
+        }; img.src = ev.target.result;
+      }; reader.readAsDataURL(file);
+    }
+
+    // Dynamic Courts Logic via Event Delegation
+    let activeCourtTarget = null;
+    let activeSuitForCourt = null;
+    const courtGrid = document.getElementById('court-grid');
+    const inputCourtSingle = document.getElementById('input-court-single');
+    
+    courtGrid.addEventListener('click', (e) => {
+      const card = e.target.closest('.court-drop');
+      if (card) { activeCourtTarget = card.dataset.court; activeSuitForCourt = card.dataset.suit; inputCourtSingle.click(); }
+    });
+    courtGrid.addEventListener('dragover', (e) => {
+      e.preventDefault(); const card = e.target.closest('.court-drop'); if (card) card.style.borderColor = 'var(--accent)';
+    });
+    courtGrid.addEventListener('dragleave', (e) => {
+      const card = e.target.closest('.court-drop'); if (card) card.style.borderColor = '';
+    });
+    courtGrid.addEventListener('drop', (e) => {
+      e.preventDefault(); const card = e.target.closest('.court-drop');
+      if (card) { card.style.borderColor = ''; if (e.dataTransfer.files[0]) loadCourtFile(card.dataset.court, card.dataset.suit, e.dataTransfer.files[0]); }
+    });
+
+    inputCourtSingle.addEventListener('change', (e) => { if (e.target.files[0] && activeCourtTarget) loadCourtFile(activeCourtTarget, activeSuitForCourt, e.target.files[0]); });
+
+    function loadCourtFile(court, suit, file) {
+      if (!file.type.includes('png')) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          if (!validateCourtAsset(img)) { triggerHelpError('help-btn-court'); return; }
+          state.courtImages[suit][court] = img; 
+          renderCourtGridUI(); 
         }; img.src = ev.target.result;
       }; reader.readAsDataURL(file);
     }
 
     function refreshAssetInventory() {
       const list = document.getElementById('asset-inventory'); list.innerHTML = '';
-      STANDARD_RANKS.forEach(r => {
+      const ranksToCheck = state.addJokers ? [...STANDARD_RANKS, 'JOKER'] : STANDARD_RANKS;
+      ranksToCheck.forEach(r => {
         const isLoaded = !!state.rankImages[r];
         const row = document.createElement('div'); row.className = 'inventory-row';
         row.innerHTML = `<span>Value Index ${r}</span><span class="status-badge ${isLoaded ? 'done' : 'missing'}">${isLoaded ? 'done' : 'missing'}</span>`;
@@ -846,7 +942,11 @@
     }
     document.getElementById('btn-export-single').addEventListener('click', () => generatePDF(false)); document.getElementById('btn-export-batch').addEventListener('click', () => generatePDF(true));
 
-    refreshAssetInventory(); rebuildDeckList(); resizeCanvas();
+    // Boot
+    renderCourtGridUI();
+    refreshAssetInventory(); 
+    rebuildDeckList(); 
+    resizeCanvas();
   </script>
 </body>
 </html>
