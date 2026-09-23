@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>KARTENWERK — Print-Ready Playing Card Engine</title>
   
-  <!-- IBM Plex Sans & IBM Plex Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     :root {
-      /* Sleek Light Swiss Engineering Theme */
       --bg-root: #e4e4e7;
       --bg-panel: #f4f4f5;
       --bg-input: #ffffff;
@@ -23,7 +22,6 @@
       --text-main: #18181b;
       --text-dim: #71717a;
       
-      /* Pure RGB Blue Accent */
       --accent: #0000FF;
       --accent-hover: rgba(0, 0, 255, 0.85);
       
@@ -37,9 +35,9 @@
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body { background-color: var(--bg-root); color: var(--text-main); font-family: var(--font-sans); font-size: 11px; line-height: 1.4; overflow: hidden; height: 100vh; display: flex; }
     #app { display: grid; grid-template-columns: 360px 1fr; width: 100vw; height: 100vh; }
+    
     aside { background: var(--border-subtle); border-right: 1px solid var(--border-strong); overflow-y: auto; display: flex; flex-direction: column; gap: 1px; }
 
-    /* Accordion System */
     .accordion { background: var(--bg-panel); display: flex; flex-direction: column; }
     .accordion-header { padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: background 0.15s ease; }
     .accordion-header:hover { background: var(--bg-hover); }
@@ -47,28 +45,24 @@
     .accordion.collapsed .accordion-content { display: none; }
     .arrow { font-size: 10px; color: var(--text-dim); transition: transform 0.2s ease; }
     .accordion.collapsed .arrow { transform: rotate(180deg); }
+
     .section-title { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-main); font-weight: 500; display: flex; gap: 12px; align-items: center; }
 
-    /* Forms */
     .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center; }
     .field-row.full { grid-template-columns: 1fr; }
     .field-row.four-cols { grid-template-columns: repeat(4, 1fr); gap: 4px; }
+
     label { font-size: 10px; color: var(--text-dim); font-weight: 500; margin-bottom: 4px; display: block; }
     select, input[type="number"], input[type="text"] { width: 100%; height: 26px; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 2px; color: var(--text-main); font-family: var(--font-mono); font-size: 11px; padding: 0 6px; outline: none; transition: border-color 0.15s ease; }
     select:focus, input:focus { border-color: var(--accent); }
 
-    .checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 6px; margin-bottom: 6px; font-size: 11px; color: var(--text-main); }
+    .checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 6px; font-size: 11px; color: var(--text-main); }
     .checkbox-wrap input[type="checkbox"] { appearance: none; width: 14px; height: 14px; border: 1px solid var(--border-strong); background: var(--bg-input); border-radius: 2px; cursor: pointer; position: relative; }
     .checkbox-wrap input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
     .checkbox-wrap input[type="checkbox"]:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 3px; height: 7px; border: solid white; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
     .chain-toggle { width: 26px; height: 26px; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 2px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dim); }
     .chain-toggle.active { color: var(--accent); border-color: var(--accent); }
 
-    /* Setup Sub-grouping Box */
-    .group-box { border: 1px solid var(--border-subtle); background: #ffffff; padding: 10px; border-radius: 2px; margin-bottom: 12px; }
-    .group-title { font-family: var(--font-mono); font-size: 9px; color: var(--text-dim); text-transform: uppercase; margin-bottom: 8px; border-bottom: 1px solid #f4f4f5; padding-bottom: 4px; }
-
-    /* Animations & PIP */
     @keyframes organic-wiggle {
       0%, 100% { transform: rotate(0deg) translateX(0); }
       15% { transform: rotate(-6deg) translateX(-2px); }
@@ -80,51 +74,54 @@
     .help-btn { display: inline-block; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); cursor: pointer; transition: color 0.15s ease; white-space: nowrap; text-decoration: underline; text-underline-offset: 2px; }
     .help-btn:hover { color: var(--accent); }
     .help-btn.error-state { color: var(--status-missing); animation: organic-wiggle 0.4s ease-in-out; }
+
     .pip-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(24, 24, 27, 0.3); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s ease; }
     .pip-overlay.active { opacity: 1; pointer-events: auto; }
     .pip-content { background: var(--bg-input); padding: 4px; border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-subtle); max-width: 90vw; max-height: 90vh; transform: scale(0.95); transition: transform 0.2s ease; }
     .pip-overlay.active .pip-content { transform: scale(1); }
     .pip-content img { display: block; max-width: 100%; max-height: calc(90vh - 8px); border-radius: 2px; }
 
-    /* Drop Zones */
-    .drop-zone { border: 1px dashed var(--border-strong); border-radius: 2px; padding: 10px; text-align: center; background: var(--bg-panel); cursor: pointer; transition: all 0.15s ease; margin-bottom: 8px; }
+    .drop-zone { border: 1px dashed var(--border-strong); border-radius: 2px; padding: 10px; text-align: center; background: var(--bg-input); cursor: pointer; transition: all 0.15s ease; margin-bottom: 8px; }
     .drop-zone.dragover { border-color: var(--accent); background: rgba(0, 0, 255, 0.05); }
     .drop-label { font-size: 10px; color: var(--text-main); }
-    .suit-drop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
-    .suit-drop-card { border: 1px dashed var(--border-subtle); border-radius: 2px; padding: 8px 4px; text-align: center; background: var(--bg-panel); cursor: pointer; font-family: var(--font-mono); font-size: 9px; }
-    .suit-drop-card.has-file { border-color: var(--status-done); color: var(--status-done); background: rgba(16, 185, 129, 0.05); }
+    
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 8px; }
+    
+    .drop-card { border: 1px dashed var(--border-subtle); border-radius: 2px; padding: 8px 4px; text-align: center; background: var(--bg-input); cursor: pointer; font-family: var(--font-mono); font-size: 9px; transition: all 0.15s ease; }
+    .drop-card.has-file { border-color: var(--status-done); color: var(--status-done); background: rgba(16, 185, 129, 0.05); }
 
-    /* Inventory */
     .inventory-list { max-height: 110px; overflow-y: auto; border: 1px solid var(--border-subtle); background: var(--bg-input); border-radius: 2px; }
     .inventory-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-bottom: 1px solid #f4f4f5; font-family: var(--font-mono); font-size: 10px; }
     .status-badge { font-size: 8px; padding: 1px 4px; border-radius: 2px; text-transform: uppercase; font-weight: 600; }
     .status-badge.done { background: var(--status-done); color: #fff; }
     .status-badge.missing { background: var(--status-missing); color: #fff; }
 
-    /* Actions */
     .counter-display { font-family: var(--font-mono); font-size: 18px; font-weight: 500; color: var(--accent); background: var(--bg-input); padding: 6px 12px; border-radius: 2px; border: 1px solid var(--border-subtle); display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
     .counter-display span { font-size: 9px; color: var(--text-dim); font-family: var(--font-sans); }
+
     .btn { width: 100%; height: 30px; background: var(--bg-input); border: 1px solid var(--border-strong); border-radius: 2px; color: var(--text-main); font-family: var(--font-sans); font-size: 11px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease; margin-bottom: 6px; }
     .btn:hover { background: var(--bg-hover); }
     .btn.primary { background: var(--accent); border-color: var(--accent); color: #ffffff; font-weight: 600; }
     .btn.primary:hover { background: var(--accent-hover); }
 
-    /* Workspace */
     main { position: relative; background-color: var(--bg-root); overflow: hidden; display: flex; flex-direction: column; }
     #viewport-bar { height: 36px; background: var(--bg-panel); border-bottom: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10; }
     .deck-nav, .header-actions { display: flex; align-items: center; gap: 8px; }
-    .nav-btn { background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-main); height: 24px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); padding: 0 8px; transition: all 0.1s ease; }
+    .nav-btn { background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-main); height: 24px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); padding: 0 8px; }
     .nav-btn.square { width: 24px; padding: 0; }
     .nav-btn:hover { border-color: var(--border-strong); }
-    .nav-btn:active { background: var(--bg-hover); }
+
     .canvas-container { flex: 1; position: relative; cursor: grab; touch-action: none; }
     .canvas-container:active { cursor: grabbing; }
     canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+    
+    .divider { height: 1px; background: var(--border-subtle); margin: 12px 0; }
   </style>
 </head>
 <body>
 
-  <!-- PIP Global Overlay -->
+  <!-- PIP Global Overlay[cite: 2] -->
   <div id="pip-modal" class="pip-overlay">
     <div class="pip-content">
       <img src="psd_setup_help.png" alt="Setup Guide">
@@ -137,36 +134,88 @@
       <!-- 01 Document Setup -->
       <section class="accordion">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          <div class="section-title"><span>01 Document Setup</span><span style="color: var(--accent);">ISO 216 / mm</span></div>
+          <div class="section-title">
+            <span>01 Document Setup</span>
+            <span style="color: var(--accent);">ISO 216 / mm</span>
+          </div>
           <span class="arrow">▼</span>
         </div>
         <div class="accordion-content">
           <div class="field-row">
-            <div><label>Size Preset</label><select id="preset-size"><option value="french">French Rommé (59 × 91)</option><option value="poker" selected>Poker Standard (63.5 × 88.9)</option><option value="tarot">Tarot Grand (70 × 120)</option><option value="custom">Custom</option></select></div>
-            <div><label>Resolution (DPI)</label><select id="doc-dpi"><option value="72">72 (Draft)</option><option value="300" selected>300 (Offset)</option><option value="600">600 (Ultra)</option></select></div>
+            <div>
+              <label>Size Preset</label>
+              <select id="preset-size">
+                <option value="french">French Rommé (59 × 91)</option>
+                <option value="poker" selected>Poker Standard (63.5 × 88.9)</option>
+                <option value="tarot">Tarot Grand (70 × 120)</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+            <div>
+              <label>Resolution (DPI)</label>
+              <select id="doc-dpi">
+                <option value="72">72 (Draft)</option>
+                <option value="300" selected>300 (Offset)</option>
+                <option value="600">600 (Ultra)</option>
+              </select>
+            </div>
           </div>
+
           <div class="field-row" id="custom-size-row" style="display: none;">
             <div><label>Width (mm)</label><input type="number" id="card-w" value="63.5" step="0.1"></div>
             <div><label>Height (mm)</label><input type="number" id="card-h" value="88.9" step="0.1"></div>
           </div>
+
           <div class="field-row">
-            <div><label>Deck Mode</label><select id="deck-mode"><option value="preset" selected>Preset</option><option value="count">Manual Count</option></select></div>
-            <div id="deck-preset-wrap"><label>Deck Preset</label><select id="deck-preset-select"><option value="french-52" selected>52 (French)</option><option value="skat-32">32 (German Skat)</option></select></div>
-            <div id="deck-count-wrap" style="display: none;"><label>Front Faces</label><input type="number" id="deck-count-input" value="52" min="1" max="500"></div>
+            <div>
+              <label>Deck Mode</label>
+              <select id="deck-mode">
+                <option value="preset" selected>Preset</option>
+                <option value="count">Manual Count</option>
+              </select>
+            </div>
+            <div id="deck-preset-wrap">
+              <label>Deck Preset</label>
+              <select id="deck-preset-select">
+                <option value="french-52" selected>52 (French)</option>
+                <option value="skat-32">32 (German Skat)</option>
+              </select>
+            </div>
+            <div id="deck-count-wrap" style="display: none;">
+              <label>Front Faces</label>
+              <input type="number" id="deck-count-input" value="52" min="1" max="500">
+            </div>
           </div>
-          <label class="checkbox-wrap"><input type="checkbox" id="toggle-joker"><span>Add Jokers</span></label>
-          <div id="joker-slider-wrap" style="display: none; margin: 8px 0;"><label>Joker Quantity: <span id="joker-val" style="color: var(--accent); font-family: var(--font-mono);">2</span></label><input type="range" id="joker-range" min="1" max="4" value="2" style="width: 100%; accent-color: var(--accent);"></div>
-          <label class="checkbox-wrap"><input type="checkbox" id="toggle-backs" checked><span>Interleave Back Face (Duplex)</span></label>
-          
+
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="toggle-joker"><span>Add Jokers</span>
+          </label>
+          <div id="joker-slider-wrap" style="display: none; margin: 8px 0;">
+            <label>Joker Quantity: <span id="joker-val" style="color: var(--accent); font-family: var(--font-mono);">2</span></label>
+            <input type="range" id="joker-range" min="1" max="4" value="2" style="width: 100%; accent-color: var(--accent);">
+          </div>
+
+          <label class="checkbox-wrap">
+            <input type="checkbox" id="toggle-backs" checked><span>Interleave Back Face (Duplex)</span>
+          </label>
+
           <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 12px; margin-bottom: 4px;">
-            <label style="margin:0;">Bleed Box (Outer Slug)</label><div class="chain-toggle active" id="chain-lock" title="Constrain Proportions">🔗</div>
+            <label style="margin:0;">Bleed Box (Outer Slug)</label>
+            <div class="chain-toggle active" id="chain-lock" title="Constrain Proportions">🔗</div>
           </div>
           <div class="field-row four-cols">
-            <div><label>Top</label><input type="number" id="bleed-t" value="3.0" step="0.5"></div><div><label>Bot</label><input type="number" id="bleed-b" value="3.0" step="0.5"></div><div><label>In</label><input type="number" id="bleed-l" value="3.0" step="0.5"></div><div><label>Out</label><input type="number" id="bleed-r" value="3.0" step="0.5"></div>
+            <div><label>Top</label><input type="number" id="bleed-t" value="3.0" step="0.5"></div>
+            <div><label>Bot</label><input type="number" id="bleed-b" value="3.0" step="0.5"></div>
+            <div><label>In</label><input type="number" id="bleed-l" value="3.0" step="0.5"></div>
+            <div><label>Out</label><input type="number" id="bleed-r" value="3.0" step="0.5"></div>
           </div>
+
           <label style="margin-top: 8px;">Margin Box (Safe Print Area)</label>
           <div class="field-row four-cols">
-            <div><label>Top</label><input type="number" id="margin-t" value="4.0" step="0.5"></div><div><label>Bot</label><input type="number" id="margin-b" value="4.0" step="0.5"></div><div><label>In</label><input type="number" id="margin-l" value="4.0" step="0.5"></div><div><label>Out</label><input type="number" id="margin-r" value="4.0" step="0.5"></div>
+            <div><label>Top</label><input type="number" id="margin-t" value="4.0" step="0.5"></div>
+            <div><label>Bot</label><input type="number" id="margin-b" value="4.0" step="0.5"></div>
+            <div><label>In</label><input type="number" id="margin-l" value="4.0" step="0.5"></div>
+            <div><label>Out</label><input type="number" id="margin-r" value="4.0" step="0.5"></div>
           </div>
         </div>
       </section>
@@ -174,51 +223,66 @@
       <!-- 02 Asset Pipeline -->
       <section class="accordion">
         <div class="accordion-header" onclick="toggleAccordion(this)">
-          <div class="section-title"><span>02 Asset Pipeline</span><span>PNG's Only</span></div>
+          <div class="section-title">
+            <span>02 Asset Pipeline</span>
+            <span>PNG's Only</span>
+          </div>
           <span class="arrow">▼</span>
         </div>
         <div class="accordion-content">
+          
           <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;">
-            <span style="flex:1;">Drop image assets into the corresponding panels. Ensure your files strictly contain an Alpha channel.</span>
+            <span style="flex:1;"><strong>Indices Format:</strong> Provide a 1:1 Square Format (e.g., 512×512px) with artwork centered and touching the outer borders. Alpha Channel Required.</span>
             <span id="help-btn" class="help-btn">Setup Guide</span>
           </div>
 
-          <!-- Group A: Square Indices & Pips -->
-          <div class="group-box">
-            <div class="group-title">1. Matrices & Indices</div>
-            <p style="font-size:9px; color:var(--text-dim); margin-bottom:8px;">Format: 1:1 Square (Min 512×512px). Artwork touches borders.</p>
-            <div class="drop-zone" id="drop-numbers">
-              <div style="font-size: 14px; margin-bottom: 2px;">↓</div>
-              <div class="drop-label"><strong>Drop Corner Values</strong> (01.png...10.png, B, D, K, A)</div>
-              <input type="file" id="input-numbers" multiple accept="image/png" style="display: none;">
-            </div>
-            <label>Four Suit Symbols</label>
-            <div class="suit-drop-grid">
-              <div class="suit-drop-card" id="suit-drop-hearts" data-suit="hearts">♥ HEARTS</div><div class="suit-drop-card" id="suit-drop-diamonds" data-suit="diamonds">♦ DIAMS</div>
-              <div class="suit-drop-card" id="suit-drop-spades" data-suit="spades">♠ SPADES</div><div class="suit-drop-card" id="suit-drop-clubs" data-suit="clubs">♣ CLUBS</div>
-            </div>
-            <input type="file" id="input-suit-single" accept="image/png" style="display:none;">
+          <!-- Indices Drop -->
+          <div class="drop-zone" id="drop-numbers">
+            <div style="font-size: 14px; margin-bottom: 2px;">↓</div>
+            <div class="drop-label"><strong>Drop Value Indices</strong> (01.png...10.png, B, D, K, A)</div>
+            <input type="file" id="input-numbers" multiple accept="image/png" style="display: none;">
           </div>
 
-          <!-- Group B: Portrait Center Artworks (Courts & Aces) -->
-          <div class="group-box">
-            <div class="group-title">2. Center Artworks (Courts & Aces)</div>
-            <p style="font-size:9px; color:var(--text-dim); margin-bottom:8px;">Format: Full-bleed Portrait (e.g., 825×1125px). Fills the safe margin area bounding box.</p>
-            <label class="checkbox-wrap" style="margin-top:0;">
-              <input type="checkbox" id="toggle-custom-ace"><span>Replace Ace Matrix with Custom Artwork</span>
+          <!-- Suit Drop -->
+          <label>Four Suit Symbols</label>
+          <div class="grid-4">
+            <div class="drop-card suit-drop" data-suit="hearts">♥ HEARTS</div>
+            <div class="drop-card suit-drop" data-suit="diamonds">♦ DIAMS</div>
+            <div class="drop-card suit-drop" data-suit="spades">♠ SPADES</div>
+            <div class="drop-card suit-drop" data-suit="clubs">♣ CLUBS</div>
+          </div>
+          <input type="file" id="input-suit-single" accept="image/png" style="display:none;">
+
+          <div class="divider"></div>
+
+          <!-- Court Drop -->
+          <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5;">
+            <strong>Court Art Format:</strong> Artwork must be in portrait orientation. Perfect Size: <strong>825×1125px</strong> (2.75×3.75 inches at 300 DPI). Alpha Channel Required.
+          </div>
+          
+          <label style="display:flex; justify-content: space-between;">
+            Face / Court Artworks
+            <label class="checkbox-wrap" style="margin:0; font-weight: normal;">
+              <input type="checkbox" id="toggle-custom-ace"><span>Custom Ace</span>
             </label>
-            <div class="drop-zone" id="drop-courts">
-              <div class="drop-label"><strong>Drop Center Artworks</strong> (B.png, D.png, K.png, A.png)</div>
-              <input type="file" id="input-courts" multiple accept="image/png" style="display: none;">
-            </div>
+          </label>
+          
+          <div class="grid-4" id="court-grid">
+            <div class="drop-card court-drop" data-court="B">JACK (B)</div>
+            <div class="drop-card court-drop" data-court="D">QUEEN (D)</div>
+            <div class="drop-card court-drop" data-court="K">KING (K)</div>
+            <div class="drop-card court-drop" data-court="A" id="drop-court-a" style="display:none;">ACE (A)</div>
           </div>
+          <input type="file" id="input-court-single" accept="image/png" style="display:none;">
 
-          <div class="drop-zone" id="drop-backface">
+          <div class="divider"></div>
+
+          <div class="drop-zone" id="drop-backface" style="margin-bottom: 12px;">
             <div class="drop-label"><strong>Optional Back Face Design</strong> (back.png)</div>
             <input type="file" id="input-backface" accept="image/png" style="display: none;">
           </div>
-          
-          <label>Loaded Index Verification</label>
+
+          <label>Loaded Asset Verification</label>
           <div class="inventory-list" id="asset-inventory"></div>
         </div>
       </section>
@@ -232,13 +296,26 @@
         <div class="accordion-content">
           <label>Numbers / Values</label>
           <div class="field-row">
-            <label class="checkbox-wrap" style="margin-top:0;"><input type="checkbox" id="val-snap"><span>Snap to Margins</span></label>
-            <div><label>Scale (%)</label><input type="number" id="val-scale" value="100" min="10" max="300" oninput="triggerRender()"></div>
+            <label class="checkbox-wrap" style="margin-top:0;">
+              <input type="checkbox" id="val-snap">
+              <span>Snap to Margins</span>
+            </label>
+            <div>
+              <label>Scale (%)</label>
+              <input type="number" id="val-scale" value="100" min="10" max="300" oninput="triggerRender()">
+            </div>
           </div>
+
           <label style="margin-top: 12px;">Colours (Pips & Center Graphics)</label>
           <div class="field-row">
-            <div><label>Scale (%)</label><input type="number" id="pip-scale" value="100" min="10" max="300" oninput="triggerRender()"></div>
-            <div><label>Spacing (%)</label><input type="number" id="pip-spacing" value="100" min="10" max="200" oninput="triggerRender()"></div>
+            <div>
+              <label>Scale (%)</label>
+              <input type="number" id="pip-scale" value="100" min="10" max="300" oninput="triggerRender()">
+            </div>
+            <div>
+              <label>Spacing (%)</label>
+              <input type="number" id="pip-spacing" value="100" min="10" max="200" oninput="triggerRender()">
+            </div>
           </div>
         </div>
       </section>
@@ -251,16 +328,30 @@
         </div>
         <div class="accordion-content">
           <div class="field-row full" style="margin-bottom: 12px;">
-            <div><label>PDF Preset Standard</label><select id="pdf-standard"><option value="X-1a">PDF/X-1a:2001 (Offset ISO Verified)</option><option value="X-3">PDF/X-3:2002 (Color Managed)</option><option value="X-4">PDF/X-4:2010 (Direct Transparency)</option><option value="press">Press Quality</option></select></div>
+            <div>
+              <label>PDF Preset Standard</label>
+              <select id="pdf-standard">
+                <option value="X-1a">PDF/X-1a:2001 (Offset ISO Verified)</option>
+                <option value="X-3">PDF/X-3:2002 (Color Managed)</option>
+                <option value="X-4">PDF/X-4:2010 (Direct Transparency)</option>
+                <option value="press">Press Quality</option>
+              </select>
+            </div>
           </div>
-          <div class="counter-display"><div id="counter-calc">52</div><span>TOTAL RUN PAGES</span></div>
+
+          <div class="counter-display">
+            <div id="counter-calc">52</div>
+            <span>TOTAL RUN PAGES</span>
+          </div>
+
           <button class="btn" id="btn-export-single">Export Current Card (Single PDF)</button>
           <button class="btn primary" id="btn-export-batch">Batch Export Deck (Multi-Page PDF)</button>
         </div>
       </section>
+
     </aside>
 
-    <!-- Workspace -->
+    <!-- Visual Workspace -->
     <main>
       <div id="viewport-bar">
         <div class="deck-nav" id="nav-controls">
@@ -269,12 +360,14 @@
           <button class="nav-btn square" id="next-card">→</button>
         </div>
         <div class="header-actions">
-          <button class="nav-btn" id="btn-actual-size" title="Zoom to 100%">◧ Actual Size</button>
+          <button class="nav-btn" id="btn-actual-size" title="Zoom to 100%">1:1 Actual Size</button>
           <button class="nav-btn" id="btn-preflight" title="Keyboard Shortcut [P]">◱ Preflight View</button>
           <button class="nav-btn" id="btn-exit-preflight" style="display:none; color: var(--accent); border-color: var(--accent);" title="Keyboard Shortcut [P]">✕ Exit Preflight</button>
         </div>
       </div>
-      <div class="canvas-container" id="canvas-wrapper"><canvas id="stage"></canvas></div>
+      <div class="canvas-container" id="canvas-wrapper">
+        <canvas id="stage"></canvas>
+      </div>
     </main>
   </div>
 
@@ -282,6 +375,7 @@
     /**
      * KARTENWERK CORE ENGINE
      */
+
     const SUITS = [
       { id: 'clubs', symbol: '♣', name: 'Clubs', color: '#111111' },
       { id: 'spades', symbol: '♠', name: 'Spades', color: '#111111' },
@@ -289,24 +383,28 @@
       { id: 'diamonds', symbol: '♦', name: 'Diamonds', color: '#d91b1b' }
     ];
     const STANDARD_RANKS = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'B', 'D', 'K', 'A'];
+    const MM_TO_BASE_PX = 3.7795275591;
 
     const state = {
       cardW: 63.5, cardH: 88.9, dpi: 300,
       bleed: { top: 3.0, bottom: 3.0, left: 3.0, right: 3.0 },
       margin: { top: 4.0, bottom: 4.0, left: 4.0, right: 4.0 },
-      linkedBleed: true, deckMode: 'preset', presetDeck: 'french-52', cardCount: 52,
-      addJokers: false, jokerCount: 2, addBacks: true, activeCardIndex: 0,
-      customAce: false,
+      linkedBleed: true,
+      deckMode: 'preset', presetDeck: 'french-52', cardCount: 52,
+      addJokers: false, jokerCount: 2, addBacks: true, customAce: false,
+      activeCardIndex: 0,
+      
       suitImages: {}, rankImages: {}, courtImages: {}, backImage: null,
-      zoom: 1.0, panX: 0, panY: 0, isPanning: false, startX: 0, startY: 0, isPreflight: false
+      zoom: 1.0, panX: 0, panY: 0, isPanning: false, startX: 0, startY: 0,
+      isPreflight: false
     };
 
     let deckCards = [];
-    const MM_TO_BASE_PX = 3.7795275591; 
 
-    // Helper PIP & Validation
+    // PIP Setup Guide Logic[cite: 2]
     const helpBtn = document.getElementById('help-btn');
     const pipModal = document.getElementById('pip-modal');
+    
     helpBtn.addEventListener('click', () => pipModal.classList.add('active'));
     pipModal.addEventListener('click', (e) => { if (e.target === pipModal) pipModal.classList.remove('active'); });
 
@@ -316,66 +414,109 @@
       helpBtn.classList.add('error-state');
     }
 
-    function validateAssetSquare(img) { return (img.width === img.height) && (img.width >= 512); }
-    function validateAssetPortrait(img) { return (img.height > img.width) && (img.width >= 512); }
+    function validateAsset(img) {
+      const w = img.width, h = img.height;
+      return (w === h) && (w === 512 || w === 1024);
+    }
+    
+    function validateCourtAsset(img) {
+      const w = img.width, h = img.height;
+      return (h >= w) && (w >= 300); // Ensures portrait and adequate res.
+    }
 
+    // Accordion UI Logic
     function toggleAccordion(header) { header.parentElement.classList.toggle('collapsed'); }
 
-    // Dynamic Top-Left Origin Ruler System
+    // Dynamic InDesign Ruler Engine
     function drawRulers(c, w, h) {
-      const rulerSize = 16;
       c.save();
-      c.fillStyle = 'var(--bg-panel)'; c.fillRect(0, 0, w, rulerSize); c.fillRect(0, 0, rulerSize, h);
+      const rulerSize = 16;
+      const dpr = window.devicePixelRatio || 1;
+      
+      // Reset transform to draw natively in UI screen space
+      c.setTransform(dpr, 0, 0, dpr, 0, 0);
+      
+      // Draw background tracks
+      c.fillStyle = 'var(--bg-panel)'; 
+      c.fillRect(0, 0, w, rulerSize); 
+      c.fillRect(0, 0, rulerSize, h);
+      
+      // Border Lines
       c.strokeStyle = 'var(--border-strong)'; c.lineWidth = 1;
-      c.beginPath(); c.moveTo(0, rulerSize); c.lineTo(w, rulerSize); c.moveTo(rulerSize, 0); c.lineTo(rulerSize, h); c.stroke();
-      c.fillStyle = 'var(--text-dim)'; c.font = '9px var(--font-mono)'; c.textAlign = 'center'; c.textBaseline = 'top';
+      c.beginPath(); 
+      c.moveTo(0, rulerSize); c.lineTo(w, rulerSize); 
+      c.moveTo(rulerSize, 0); c.lineTo(rulerSize, h); 
+      c.stroke();
 
-      const cx = w / 2 + state.panX, cy = h / 2 + state.panY;
-      // Define Ruler 0,0 at the exact Top-Left of the Trim Box
-      const trimOriginX = cx - ((state.cardW / 2) * MM_TO_BASE_PX * state.zoom);
-      const trimOriginY = cy - ((state.cardH / 2) * MM_TO_BASE_PX * state.zoom);
+      c.fillStyle = 'var(--text-dim)'; 
+      c.font = '9px var(--font-mono)'; 
 
-      // X Axis
-      const minMmX = Math.floor((rulerSize - trimOriginX) / (MM_TO_BASE_PX * state.zoom));
-      const maxMmX = Math.ceil((w - trimOriginX) / (MM_TO_BASE_PX * state.zoom));
+      // Matrix calculations mapping Canvas Center to Trim Box Top-Left Origin (0,0)
+      const cx = w / 2 + state.panX;
+      const cy = h / 2 + state.panY;
+      const originX = cx - (state.cardW / 2) * MM_TO_BASE_PX * state.zoom;
+      const originY = cy - (state.cardH / 2) * MM_TO_BASE_PX * state.zoom;
+      const pxPerMm = MM_TO_BASE_PX * state.zoom;
+      
+      // Dynamic scaling step to prevent black overlapping lines
+      let step = 1;
+      if (pxPerMm < 2) step = 20;
+      else if (pxPerMm < 4) step = 10;
+      else if (pxPerMm < 10) step = 5;
+      else if (pxPerMm < 20) step = 2;
+
+      // X Ruler
+      const startMmMx = Math.floor(-originX / pxPerMm);
+      const endMmMx = Math.ceil((w - originX) / pxPerMm);
+      
       c.beginPath();
-      for(let mm = minMmX; mm <= maxMmX; mm++) {
-         const screenX = trimOriginX + (mm * MM_TO_BASE_PX * state.zoom);
-         if (screenX < rulerSize) continue;
-
-         // Dynamic Density Scaling
-         if (state.zoom < 0.4 && mm % 5 !== 0) continue;
-         if (state.zoom < 0.15 && mm % 10 !== 0) continue;
-
-         let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
-         c.moveTo(screenX, rulerSize - tickLength); c.lineTo(screenX, rulerSize);
-         if (mm % 10 === 0 && state.zoom > 0.25) c.fillText(mm, screenX, 2);
+      for(let mm = startMmMx; mm <= endMmMx; mm++) {
+        if (mm % step !== 0) continue;
+        const screenX = originX + (mm * pxPerMm);
+        if (screenX < rulerSize) continue;
+        
+        let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
+        c.moveTo(screenX, rulerSize - tickLength); 
+        c.lineTo(screenX, rulerSize);
+        
+        if (mm % 10 === 0 && (step <= 10 || mm % 20 === 0)) {
+          c.textAlign = 'center'; c.textBaseline = 'top';
+          c.fillText(mm, screenX, 2);
+        }
       }
       c.stroke();
 
-      // Y Axis
-      const minMmY = Math.floor((rulerSize - trimOriginY) / (MM_TO_BASE_PX * state.zoom));
-      const maxMmY = Math.ceil((h - trimOriginY) / (MM_TO_BASE_PX * state.zoom));
+      // Y Ruler
+      const startMmMy = Math.floor(-originY / pxPerMm);
+      const endMmMy = Math.ceil((h - originY) / pxPerMm);
+      
       c.beginPath();
-      for(let mm = minMmY; mm <= maxMmY; mm++) {
-         const screenY = trimOriginY + (mm * MM_TO_BASE_PX * state.zoom);
-         if (screenY < rulerSize) continue;
-
-         if (state.zoom < 0.4 && mm % 5 !== 0) continue;
-         if (state.zoom < 0.15 && mm % 10 !== 0) continue;
-
-         let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
-         c.moveTo(rulerSize - tickLength, screenY); c.lineTo(rulerSize, screenY);
-         if (mm % 10 === 0 && state.zoom > 0.25) {
-           c.save(); c.translate(2, screenY); c.rotate(-Math.PI/2); c.fillText(mm, 0, 0); c.restore();
-         }
+      for(let mm = startMmMy; mm <= endMmMy; mm++) {
+        if (mm % step !== 0) continue;
+        const screenY = originY + (mm * pxPerMm);
+        if (screenY < rulerSize) continue;
+        
+        let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
+        c.moveTo(rulerSize - tickLength, screenY); 
+        c.lineTo(rulerSize, screenY);
+        
+        if (mm % 10 === 0 && (step <= 10 || mm % 20 === 0)) {
+          c.save(); 
+          c.translate(2, screenY); c.rotate(-Math.PI/2); 
+          c.textAlign = 'center'; c.textBaseline = 'top';
+          c.fillText(mm, 0, 0); 
+          c.restore();
+        }
       }
       c.stroke();
-      c.fillStyle = 'var(--bg-panel)'; c.fillRect(0, 0, rulerSize, rulerSize); c.strokeRect(0, 0, rulerSize, rulerSize);
+      
+      // Zero Origin Corner Block
+      c.fillStyle = 'var(--bg-panel)'; c.fillRect(0, 0, rulerSize, rulerSize); 
+      c.strokeStyle = 'var(--border-strong)'; c.strokeRect(0, 0, rulerSize, rulerSize);
       c.restore();
     }
 
-    // Preflight & Nav
+    // View Modes
     function togglePreflight() {
       state.isPreflight = !state.isPreflight;
       document.getElementById('btn-preflight').style.display = state.isPreflight ? 'none' : 'flex';
@@ -386,11 +527,11 @@
     }
     document.getElementById('btn-preflight').addEventListener('click', togglePreflight);
     document.getElementById('btn-exit-preflight').addEventListener('click', togglePreflight);
-    document.getElementById('btn-actual-size').addEventListener('click', () => {
-      if(state.isPreflight) togglePreflight();
-      state.zoom = 1.0; state.panX = 0; state.panY = 0; render();
+    document.getElementById('btn-actual-size').addEventListener('click', () => { state.zoom = 1.0; state.panX = 0; state.panY = 0; render(); });
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (e.key.toLowerCase() === 'p') togglePreflight();
     });
-    window.addEventListener('keydown', (e) => { if (e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT' && e.key.toLowerCase() === 'p') togglePreflight(); });
 
     // Deck Logic
     function rebuildDeckList() {
@@ -411,10 +552,15 @@
     }
 
     const PIP_LAYOUTS = {
-      'A': [[0.5, 0.5, false]], '2': [[0.5, 0.22, false], [0.5, 0.78, true]], '3': [[0.5, 0.22, false], [0.5, 0.5, false], [0.5, 0.78, true]],
-      '4': [[0.32, 0.22, false], [0.68, 0.22, false], [0.32, 0.78, true],  [0.68, 0.78, true]], '5': [[0.32, 0.22, false], [0.68, 0.22, false], [0.5, 0.5, false], [0.32, 0.78, true],  [0.68, 0.78, true]],
-      '6': [[0.32, 0.22, false], [0.68, 0.22, false], [0.32, 0.5, false],  [0.68, 0.5, false], [0.32, 0.78, true],  [0.68, 0.78, true]], '7': [[0.32, 0.22, false], [0.68, 0.22, false], [0.5, 0.36, false], [0.32, 0.5, false],  [0.68, 0.5, false], [0.32, 0.78, true],  [0.68, 0.78, true]],
-      '8': [[0.32, 0.20, false], [0.68, 0.20, false], [0.5, 0.35, false], [0.32, 0.50, false], [0.68, 0.50, false], [0.5, 0.65, true], [0.32, 0.80, true],  [0.68, 0.80, true]], '9': [[0.32, 0.18, false], [0.68, 0.18, false], [0.32, 0.38, false], [0.68, 0.38, false], [0.5, 0.50, false], [0.32, 0.62, true],  [0.68, 0.62, true], [0.32, 0.82, true],  [0.68, 0.82, true]],
+      'A': [[0.5, 0.5, false]],
+      '2': [[0.5, 0.22, false], [0.5, 0.78, true]],
+      '3': [[0.5, 0.22, false], [0.5, 0.5, false], [0.5, 0.78, true]],
+      '4': [[0.32, 0.22, false], [0.68, 0.22, false], [0.32, 0.78, true],  [0.68, 0.78, true]],
+      '5': [[0.32, 0.22, false], [0.68, 0.22, false], [0.5, 0.5, false], [0.32, 0.78, true],  [0.68, 0.78, true]],
+      '6': [[0.32, 0.22, false], [0.68, 0.22, false], [0.32, 0.5, false],  [0.68, 0.5, false], [0.32, 0.78, true],  [0.68, 0.78, true]],
+      '7': [[0.32, 0.22, false], [0.68, 0.22, false], [0.5, 0.36, false], [0.32, 0.5, false],  [0.68, 0.5, false], [0.32, 0.78, true],  [0.68, 0.78, true]],
+      '8': [[0.32, 0.20, false], [0.68, 0.20, false], [0.5, 0.35, false], [0.32, 0.50, false], [0.68, 0.50, false], [0.5, 0.65, true], [0.32, 0.80, true],  [0.68, 0.80, true]],
+      '9': [[0.32, 0.18, false], [0.68, 0.18, false], [0.32, 0.38, false], [0.68, 0.38, false], [0.5, 0.50, false], [0.32, 0.62, true],  [0.68, 0.62, true], [0.32, 0.82, true],  [0.68, 0.82, true]],
       '10': [[0.32, 0.18, false], [0.68, 0.18, false], [0.5, 0.28, false], [0.32, 0.38, false], [0.68, 0.38, false], [0.32, 0.62, true],  [0.68, 0.62, true], [0.5, 0.72, true], [0.32, 0.82, true],  [0.68, 0.82, true]]
     };
 
@@ -464,23 +610,17 @@
       const safeW = wPx - mgL - mgR, safeH = hPx - mgTop - mgBot, safeX = startX + mgL, safeY = startY + mgTop;
       const suitObj = SUITS.find(s => s.id === card.suit), pad = layout.valSnap ? 0 : (2 * MM_TO_BASE_PX);
 
-      // Corner Indices
       drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + pad, 0, false, layout);
       drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + pad, 0, true, layout);
       drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + safeH - pad, Math.PI, true, layout);
       drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + safeH - pad, Math.PI, false, layout);
 
-      // Center Artwork Processing (Courts vs Pips)
-      const isCourtType = ['B', 'D', 'K', 'JOKER'].includes(card.rank);
-      const isCustomAce = card.rank === 'A' && state.customAce;
-
-      if (isCourtType || isCustomAce) {
-        if (state.courtImages[card.rank]) {
-           const framePad = 8 * MM_TO_BASE_PX;
-           c.drawImage(state.courtImages[card.rank], safeX + framePad, safeY + framePad, safeW - framePad * 2, safeH - framePad * 2);
-        } else {
-           drawCourtArt(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout); // Fallback Graphic
-        }
+      // Custom Court Art Render Intercept
+      if (['B', 'D', 'K', 'A'].includes(card.rank) && state.courtImages[card.rank]) {
+        // Fallback to strict safe area drawing if custom image is loaded
+        c.drawImage(state.courtImages[card.rank], safeX, safeY, safeW, safeH);
+      } else if (['B', 'D', 'K', 'JOKER'].includes(card.rank)) {
+        drawCourtArt(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout);
       } else if (PIP_LAYOUTS[card.rank]) {
         drawPipMatrix(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout);
       }
@@ -529,7 +669,7 @@
       c.restore();
     }
 
-    // Viewport Interactivity
+    // Interactivity
     function updateCardIndicator() {
       if (deckCards.length === 0) return;
       document.getElementById('card-indicator').innerText = `Card ${(state.activeCardIndex + 1).toString().padStart(2, '0')} / ${deckCards.length.toString().padStart(2, '0')}`;
@@ -548,7 +688,7 @@
     window.addEventListener('pointermove', (e) => { if (state.isPanning) { state.panX = e.clientX - state.startX; state.panY = e.clientY - state.startY; render(); } });
     window.addEventListener('pointerup', () => state.isPanning = false);
 
-    // Document Settings Bindings
+    // Form Event Bindings
     document.getElementById('preset-size').addEventListener('change', (e) => {
       const customRow = document.getElementById('custom-size-row');
       if (e.target.value === 'french') { state.cardW = 59; state.cardH = 91; customRow.style.display = 'none'; }
@@ -562,7 +702,17 @@
     document.getElementById('toggle-joker').addEventListener('change', (e) => { state.addJokers = e.target.checked; document.getElementById('joker-slider-wrap').style.display = e.target.checked ? 'block' : 'none'; rebuildDeckList(); });
     document.getElementById('joker-range').addEventListener('input', (e) => { state.jokerCount = parseInt(e.target.value); document.getElementById('joker-val').innerText = state.jokerCount; rebuildDeckList(); });
     document.getElementById('toggle-backs').addEventListener('change', (e) => { state.addBacks = e.target.checked; rebuildDeckList(); });
-    document.getElementById('toggle-custom-ace').addEventListener('change', (e) => { state.customAce = e.target.checked; refreshAssetInventory(); render(); });
+    
+    // Toggle Custom Ace
+    document.getElementById('toggle-custom-ace').addEventListener('change', (e) => {
+      state.customAce = e.target.checked;
+      document.getElementById('drop-court-a').style.display = state.customAce ? 'block' : 'none';
+      if(!state.customAce) {
+        state.courtImages['A'] = null;
+        document.getElementById('drop-court-a').classList.remove('has-file');
+        render();
+      }
+    });
 
     const chainBtn = document.getElementById('chain-lock');
     chainBtn.addEventListener('click', () => { state.linkedBleed = !state.linkedBleed; chainBtn.classList.toggle('active', state.linkedBleed); });
@@ -575,23 +725,15 @@
       });
     });
 
-    // Asset Pipeline: Indices
+    // Asset Pipeline (Drag/Drop/Upload)
     const dropNumbers = document.getElementById('drop-numbers'), inputNumbers = document.getElementById('input-numbers');
     dropNumbers.addEventListener('click', () => inputNumbers.click());
     dropNumbers.addEventListener('dragover', (e) => { e.preventDefault(); dropNumbers.classList.add('dragover'); });
     dropNumbers.addEventListener('dragleave', () => dropNumbers.classList.remove('dragover'));
-    dropNumbers.addEventListener('drop', (e) => { e.preventDefault(); dropNumbers.classList.remove('dragover'); handleFiles(e.dataTransfer.files, 'index'); });
-    inputNumbers.addEventListener('change', (e) => handleFiles(e.target.files, 'index'));
+    dropNumbers.addEventListener('drop', (e) => { e.preventDefault(); dropNumbers.classList.remove('dragover'); handleRankFiles(e.dataTransfer.files); });
+    inputNumbers.addEventListener('change', (e) => handleRankFiles(e.target.files));
 
-    // Asset Pipeline: Court Cards
-    const dropCourts = document.getElementById('drop-courts'), inputCourts = document.getElementById('input-courts');
-    dropCourts.addEventListener('click', () => inputCourts.click());
-    dropCourts.addEventListener('dragover', (e) => { e.preventDefault(); dropCourts.classList.add('dragover'); });
-    dropCourts.addEventListener('dragleave', () => dropCourts.classList.remove('dragover'));
-    dropCourts.addEventListener('drop', (e) => { e.preventDefault(); dropCourts.classList.remove('dragover'); handleFiles(e.dataTransfer.files, 'court'); });
-    inputCourts.addEventListener('change', (e) => handleFiles(e.target.files, 'court'));
-
-    function handleFiles(files, type) {
+    function handleRankFiles(files) {
       for (const file of files) {
         if (!file.type.includes('png')) continue;
         const name = file.name.split('.')[0].toUpperCase();
@@ -599,26 +741,19 @@
         reader.onload = (ev) => {
           const img = new Image();
           img.onload = () => {
+            if (!validateAsset(img)) { triggerHelpError(); return; }
             let matchedRank = name;
             if (name === '01' || name === '1') matchedRank = 'A';
             if (name.startsWith('0')) matchedRank = name.replace('0', '');
-
-            if (type === 'index') {
-              if (!validateAssetSquare(img)) { triggerHelpError(); return; }
-              state.rankImages[matchedRank] = img;
-            } else if (type === 'court') {
-              if (!validateAssetPortrait(img)) { triggerHelpError(); return; }
-              state.courtImages[matchedRank] = img;
-            }
-            refreshAssetInventory(); render();
+            state.rankImages[matchedRank] = img; refreshAssetInventory(); render();
           }; img.src = ev.target.result;
         }; reader.readAsDataURL(file);
       }
     }
 
-    // Asset Pipeline: Suits
+    // Suits Logic
     let activeSuitTarget = null;
-    document.querySelectorAll('.suit-drop-card').forEach(card => {
+    document.querySelectorAll('.suit-drop').forEach(card => {
       const suit = card.dataset.suit;
       card.addEventListener('click', () => { activeSuitTarget = suit; document.getElementById('input-suit-single').click(); });
       card.addEventListener('dragover', (e) => { e.preventDefault(); card.style.borderColor = 'var(--accent)'; });
@@ -633,30 +768,45 @@
       reader.onload = (ev) => {
         const img = new Image();
         img.onload = () => {
-          if (!validateAssetSquare(img)) { triggerHelpError(); return; }
-          state.suitImages[suit] = img; document.getElementById(`suit-drop-${suit}`).classList.add('has-file'); refreshAssetInventory(); render();
+          if (!validateAsset(img)) { triggerHelpError(); return; }
+          state.suitImages[suit] = img; 
+          document.querySelector(`.suit-drop[data-suit="${suit}"]`).classList.add('has-file'); 
+          refreshAssetInventory(); render();
+        }; img.src = ev.target.result;
+      }; reader.readAsDataURL(file);
+    }
+    
+    // Courts Logic
+    let activeCourtTarget = null;
+    document.querySelectorAll('.court-drop').forEach(card => {
+      const court = card.dataset.court;
+      card.addEventListener('click', () => { activeCourtTarget = court; document.getElementById('input-court-single').click(); });
+      card.addEventListener('dragover', (e) => { e.preventDefault(); card.style.borderColor = 'var(--accent)'; });
+      card.addEventListener('dragleave', () => { card.style.borderColor = ''; });
+      card.addEventListener('drop', (e) => { e.preventDefault(); card.style.borderColor = ''; if (e.dataTransfer.files[0]) loadCourtFile(court, e.dataTransfer.files[0]); });
+    });
+    document.getElementById('input-court-single').addEventListener('change', (e) => { if (e.target.files[0] && activeCourtTarget) loadCourtFile(activeCourtTarget, e.target.files[0]); });
+
+    function loadCourtFile(court, file) {
+      if (!file.type.includes('png')) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          if (!validateCourtAsset(img)) { alert("Court Artwork requires a portrait format."); return; }
+          state.courtImages[court] = img; 
+          document.querySelector(`.court-drop[data-court="${court}"]`).classList.add('has-file'); 
+          render();
         }; img.src = ev.target.result;
       }; reader.readAsDataURL(file);
     }
 
     function refreshAssetInventory() {
       const list = document.getElementById('asset-inventory'); list.innerHTML = '';
-      
-      const pipRanks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'B', 'D', 'K', 'A'];
-      pipRanks.forEach(r => {
+      STANDARD_RANKS.forEach(r => {
         const isLoaded = !!state.rankImages[r];
         const row = document.createElement('div'); row.className = 'inventory-row';
-        row.innerHTML = `<span>Corner Index ${r}</span><span class="status-badge ${isLoaded ? 'done' : 'missing'}">${isLoaded ? 'done' : 'missing'}</span>`;
-        list.appendChild(row);
-      });
-
-      const courtRanks = ['B', 'D', 'K'];
-      if(state.customAce) courtRanks.push('A');
-      
-      courtRanks.forEach(r => {
-        const isLoaded = !!state.courtImages[r];
-        const row = document.createElement('div'); row.className = 'inventory-row';
-        row.innerHTML = `<span style="color:var(--accent);">Center Art ${r}</span><span class="status-badge ${isLoaded ? 'done' : 'missing'}">${isLoaded ? 'done' : 'missing'}</span>`;
+        row.innerHTML = `<span>Value Index ${r}</span><span class="status-badge ${isLoaded ? 'done' : 'missing'}">${isLoaded ? 'done' : 'missing'}</span>`;
         list.appendChild(row);
       });
     }
