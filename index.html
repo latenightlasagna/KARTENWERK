@@ -88,289 +88,125 @@
       transition: background 0.15s ease;
     }
 
-    .accordion-header:hover {
-      background: var(--bg-hover);
-    }
+    .accordion-header:hover { background: var(--bg-hover); }
+    .accordion-content { padding: 0 18px 16px 18px; display: block; }
+    .accordion.collapsed .accordion-content { display: none; }
 
-    .accordion-content {
-      padding: 0 18px 16px 18px;
-      display: block;
-    }
-
-    .accordion.collapsed .accordion-content {
-      display: none;
-    }
-
-    .arrow {
-      font-size: 10px;
-      color: var(--text-dim);
-      transition: transform 0.2s ease;
-    }
-
-    .accordion.collapsed .arrow {
-      transform: rotate(180deg);
-    }
+    .arrow { font-size: 10px; color: var(--text-dim); transition: transform 0.2s ease; }
+    .accordion.collapsed .arrow { transform: rotate(180deg); }
 
     .section-title {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--text-main);
-      font-weight: 500;
-      display: flex;
-      gap: 12px;
-      align-items: center;
+      font-family: var(--font-mono); font-size: 10px; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--text-main); font-weight: 500;
+      display: flex; gap: 12px; align-items: center;
     }
 
     /* Form Grids & Controls */
-    .field-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-bottom: 8px;
-      align-items: center;
-    }
-
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; align-items: center; }
     .field-row.full { grid-template-columns: 1fr; }
     .field-row.four-cols { grid-template-columns: repeat(4, 1fr); gap: 4px; }
 
-    label {
-      font-size: 10px;
-      color: var(--text-dim);
-      font-weight: 500;
-      margin-bottom: 4px;
-      display: block;
-    }
-
+    label { font-size: 10px; color: var(--text-dim); font-weight: 500; margin-bottom: 4px; display: block; }
     select, input[type="number"], input[type="text"] {
-      width: 100%;
-      height: 26px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: 2px;
-      color: var(--text-main);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 0 6px;
-      outline: none;
-      transition: border-color 0.15s ease;
+      width: 100%; height: 26px; background: var(--bg-input); border: 1px solid var(--border-subtle);
+      border-radius: 2px; color: var(--text-main); font-family: var(--font-mono); font-size: 11px;
+      padding: 0 6px; outline: none; transition: border-color 0.15s ease;
     }
-
     select:focus, input:focus { border-color: var(--accent); }
 
     /* Custom Checkbox */
-    .checkbox-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      cursor: pointer;
-      margin-top: 6px;
-      font-size: 11px;
-      color: var(--text-main);
-    }
-
-    .checkbox-wrap input[type="checkbox"] {
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      border: 1px solid var(--border-strong);
-      background: var(--bg-input);
-      border-radius: 2px;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .checkbox-wrap input[type="checkbox"]:checked {
-      background: var(--accent);
-      border-color: var(--accent);
-    }
-
-    .checkbox-wrap input[type="checkbox"]:checked::after {
-      content: '';
-      position: absolute;
-      left: 4px;
-      top: 1px;
-      width: 3px;
-      height: 7px;
-      border: solid white;
-      border-width: 0 1.5px 1.5px 0;
-      transform: rotate(45deg);
-    }
+    .checkbox-wrap { display: flex; align-items: center; gap: 8px; cursor: pointer; margin-top: 6px; font-size: 11px; color: var(--text-main); }
+    .checkbox-wrap input[type="checkbox"] { appearance: none; width: 14px; height: 14px; border: 1px solid var(--border-strong); background: var(--bg-input); border-radius: 2px; cursor: pointer; position: relative; }
+    .checkbox-wrap input[type="checkbox"]:checked { background: var(--accent); border-color: var(--accent); }
+    .checkbox-wrap input[type="checkbox"]:checked::after { content: ''; position: absolute; left: 4px; top: 1px; width: 3px; height: 7px; border: solid white; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
 
     /* Chain Toggle Link */
-    .chain-toggle {
-      width: 26px;
-      height: 26px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-dim);
+    .chain-toggle { width: 26px; height: 26px; background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: 2px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-dim); }
+    .chain-toggle.active { color: var(--accent); border-color: var(--accent); }
+
+    /* Helper Function: Wiggle & Text Button */
+    @keyframes organic-wiggle {
+      0%, 100% { transform: rotate(0deg) translateX(0); }
+      15% { transform: rotate(-6deg) translateX(-2px); }
+      30% { transform: rotate(5deg) translateX(1px); }
+      45% { transform: rotate(-4deg) translateX(-1px); }
+      60% { transform: rotate(2deg) translateX(1px); }
+      75% { transform: rotate(-1deg) translateX(0); }
     }
-    .chain-toggle.active {
-      color: var(--accent);
-      border-color: var(--accent);
+
+    .help-btn {
+      display: inline-block; font-family: var(--font-mono); font-size: 9px; text-transform: uppercase;
+      letter-spacing: 0.05em; color: var(--text-dim); cursor: pointer; transition: color 0.15s ease;
+      white-space: nowrap; text-decoration: underline; text-underline-offset: 2px;
     }
+    .help-btn:hover { color: var(--accent); }
+    .help-btn.error-state {
+      color: var(--status-missing);
+      animation: organic-wiggle 0.4s ease-in-out;
+    }
+
+    /* PIP Modal Overlay */
+    .pip-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(24, 24, 27, 0.3); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .pip-overlay.active { opacity: 1; pointer-events: auto; }
+    .pip-content {
+      background: var(--bg-input); padding: 4px; border-radius: 4px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid var(--border-subtle);
+      max-width: 90vw; max-height: 90vh; transform: scale(0.95); transition: transform 0.2s ease;
+    }
+    .pip-overlay.active .pip-content { transform: scale(1); }
+    .pip-content img { display: block; max-width: 100%; max-height: calc(90vh - 8px); border-radius: 2px; }
 
     /* Drop Zones */
-    .drop-zone {
-      border: 1px dashed var(--border-strong);
-      border-radius: 2px;
-      padding: 10px;
-      text-align: center;
-      background: var(--bg-input);
-      cursor: pointer;
-      transition: all 0.15s ease;
-      margin-bottom: 8px;
-    }
-    .drop-zone.dragover {
-      border-color: var(--accent);
-      background: rgba(0, 0, 255, 0.05);
-    }
+    .drop-zone { border: 1px dashed var(--border-strong); border-radius: 2px; padding: 10px; text-align: center; background: var(--bg-input); cursor: pointer; transition: all 0.15s ease; margin-bottom: 8px; }
+    .drop-zone.dragover { border-color: var(--accent); background: rgba(0, 0, 255, 0.05); }
     .drop-label { font-size: 10px; color: var(--text-main); }
 
-    .suit-drop-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 6px;
-      margin-bottom: 8px;
-    }
-    .suit-drop-card {
-      border: 1px dashed var(--border-subtle);
-      border-radius: 2px;
-      padding: 8px 4px;
-      text-align: center;
-      background: var(--bg-input);
-      cursor: pointer;
-      font-family: var(--font-mono);
-      font-size: 9px;
-    }
-    .suit-drop-card.has-file {
-      border-color: var(--status-done);
-      color: var(--status-done);
-      background: rgba(16, 185, 129, 0.05);
-    }
+    .suit-drop-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 8px; }
+    .suit-drop-card { border: 1px dashed var(--border-subtle); border-radius: 2px; padding: 8px 4px; text-align: center; background: var(--bg-input); cursor: pointer; font-family: var(--font-mono); font-size: 9px; }
+    .suit-drop-card.has-file { border-color: var(--status-done); color: var(--status-done); background: rgba(16, 185, 129, 0.05); }
 
     /* Upload Inventory List */
-    .inventory-list {
-      max-height: 110px;
-      overflow-y: auto;
-      border: 1px solid var(--border-subtle);
-      background: var(--bg-input);
-      border-radius: 2px;
-    }
-    .inventory-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 8px;
-      border-bottom: 1px solid #f4f4f5;
-      font-family: var(--font-mono);
-      font-size: 10px;
-    }
-    .status-badge {
-      font-size: 8px;
-      padding: 1px 4px;
-      border-radius: 2px;
-      text-transform: uppercase;
-      font-weight: 600;
-    }
+    .inventory-list { max-height: 110px; overflow-y: auto; border: 1px solid var(--border-subtle); background: var(--bg-input); border-radius: 2px; }
+    .inventory-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; border-bottom: 1px solid #f4f4f5; font-family: var(--font-mono); font-size: 10px; }
+    .status-badge { font-size: 8px; padding: 1px 4px; border-radius: 2px; text-transform: uppercase; font-weight: 600; }
     .status-badge.done { background: var(--status-done); color: #fff; }
     .status-badge.missing { background: var(--status-missing); color: #fff; }
 
     /* Actions & Buttons */
-    .counter-display {
-      font-family: var(--font-mono);
-      font-size: 18px;
-      font-weight: 500;
-      color: var(--accent);
-      background: var(--bg-input);
-      padding: 6px 12px;
-      border-radius: 2px;
-      border: 1px solid var(--border-subtle);
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 14px;
-    }
+    .counter-display { font-family: var(--font-mono); font-size: 18px; font-weight: 500; color: var(--accent); background: var(--bg-input); padding: 6px 12px; border-radius: 2px; border: 1px solid var(--border-subtle); display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 14px; }
     .counter-display span { font-size: 9px; color: var(--text-dim); font-family: var(--font-sans); }
 
-    .btn {
-      width: 100%;
-      height: 30px;
-      background: var(--bg-input);
-      border: 1px solid var(--border-strong);
-      border-radius: 2px;
-      color: var(--text-main);
-      font-family: var(--font-sans);
-      font-size: 11px;
-      font-weight: 500;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      transition: all 0.15s ease;
-      margin-bottom: 6px;
-    }
+    .btn { width: 100%; height: 30px; background: var(--bg-input); border: 1px solid var(--border-strong); border-radius: 2px; color: var(--text-main); font-family: var(--font-sans); font-size: 11px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: all 0.15s ease; margin-bottom: 6px; }
     .btn:hover { background: var(--bg-hover); }
-    .btn.primary {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: #ffffff;
-      font-weight: 600;
-    }
+    .btn.primary { background: var(--accent); border-color: var(--accent); color: #ffffff; font-weight: 600; }
     .btn.primary:hover { background: var(--accent-hover); }
 
     /* Interactive Viewport */
-    main {
-      position: relative;
-      background-color: var(--bg-root);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-    }
-
-    #viewport-bar {
-      height: 36px;
-      background: var(--bg-panel);
-      border-bottom: 1px solid var(--border-strong);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      z-index: 10;
-    }
-
+    main { position: relative; background-color: var(--bg-root); overflow: hidden; display: flex; flex-direction: column; }
+    #viewport-bar { height: 36px; background: var(--bg-panel); border-bottom: 1px solid var(--border-strong); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 10; }
     .deck-nav, .header-actions { display: flex; align-items: center; gap: 8px; }
-
-    .nav-btn {
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-main);
-      height: 24px;
-      cursor: pointer;
-      border-radius: 2px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-mono);
-      padding: 0 8px;
-    }
+    .nav-btn { background: var(--bg-input); border: 1px solid var(--border-subtle); color: var(--text-main); height: 24px; cursor: pointer; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); padding: 0 8px; }
     .nav-btn.square { width: 24px; padding: 0; }
     .nav-btn:hover { border-color: var(--border-strong); }
 
     .canvas-container { flex: 1; position: relative; cursor: grab; touch-action: none; }
     .canvas-container:active { cursor: grabbing; }
     canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-
   </style>
 </head>
 <body>
+
+  <!-- PIP Global Overlay -->
+  <div id="pip-modal" class="pip-overlay">
+    <div class="pip-content">
+      <img src="psd_setup_help.png" alt="Setup Guide">
+    </div>
+  </div>
 
   <div id="app">
     <!-- Config Column -->
@@ -476,8 +312,10 @@
           <span class="arrow">▼</span>
         </div>
         <div class="accordion-content">
-          <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5;">
-            <strong>Format Recommendation:</strong> For accurate mathematical alignment, provide a 1:1 Square Format (e.g., 512×512px) with the artwork exactly centered and touching the outer borders. Backgrounds must be transparent (Alpha Channel).
+          
+          <div style="font-size: 10px; color: var(--text-dim); margin-bottom: 12px; line-height: 1.5; display: flex; gap: 8px; align-items: flex-start;">
+            <span style="flex:1;"><strong>Format Recommendation:</strong> For accurate mathematical alignment, provide a 1:1 Square Format (e.g., 512×512px) with the artwork exactly centered and touching the outer borders. Backgrounds must be transparent (Alpha Channel).</span>
+            <span id="help-btn" class="help-btn">Setup Guide</span>
           </div>
 
           <div class="drop-zone" id="drop-numbers">
@@ -591,7 +429,6 @@
   <script>
     /**
      * KARTENWERK CORE ENGINE
-     * Müller-Brockmann Grid, Parametric Card Layout, Matrix Canvas 2D
      */
 
     const SUITS = [
@@ -611,7 +448,6 @@
       addJokers: false, jokerCount: 2, addBacks: true,
       activeCardIndex: 0,
       suitImages: {}, rankImages: {}, backImage: null,
-      
       zoom: 1.0, panX: 0, panY: 0, isPanning: false, startX: 0, startY: 0,
       isPreflight: false
     };
@@ -619,100 +455,79 @@
     let deckCards = [];
     const MM_TO_BASE_PX = 3.7795275591; 
 
-    // Accordion UI Logic
-    function toggleAccordion(header) {
-      header.parentElement.classList.toggle('collapsed');
+    // PIP Setup Guide Logic
+    const helpBtn = document.getElementById('help-btn');
+    const pipModal = document.getElementById('pip-modal');
+    
+    helpBtn.addEventListener('click', () => pipModal.classList.add('active'));
+    pipModal.addEventListener('click', (e) => {
+      if (e.target === pipModal) pipModal.classList.remove('active');
+    });
+
+    function triggerHelpError() {
+      helpBtn.classList.remove('error-state');
+      void helpBtn.offsetWidth; // DOM Reflow to restart animation
+      helpBtn.classList.add('error-state');
     }
 
-    // Viewport Rulers System (InDesign style)
+    function validateAsset(img) {
+      const w = img.width, h = img.height;
+      return (w === h) && (w === 512 || w === 1024);
+    }
+
+    // Accordion UI Logic
+    function toggleAccordion(header) { header.parentElement.classList.toggle('collapsed'); }
+
+    // Viewport Rulers System
     function drawRulers(c, w, h) {
       const rulerSize = 16;
       c.save();
-      
-      // Ruler Backdrops
-      c.fillStyle = 'var(--bg-panel)';
-      c.fillRect(0, 0, w, rulerSize);
-      c.fillRect(0, 0, rulerSize, h);
-      
-      // Border Lines
-      c.strokeStyle = 'var(--border-strong)';
-      c.lineWidth = 1;
-      c.beginPath();
-      c.moveTo(0, rulerSize); c.lineTo(w, rulerSize);
-      c.moveTo(rulerSize, 0); c.lineTo(rulerSize, h);
-      c.stroke();
+      c.fillStyle = 'var(--bg-panel)'; c.fillRect(0, 0, w, rulerSize); c.fillRect(0, 0, rulerSize, h);
+      c.strokeStyle = 'var(--border-strong)'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(0, rulerSize); c.lineTo(w, rulerSize); c.moveTo(rulerSize, 0); c.lineTo(rulerSize, h); c.stroke();
 
-      c.fillStyle = 'var(--text-dim)';
-      c.font = '9px var(--font-mono)';
-      c.textAlign = 'center';
-      c.textBaseline = 'top';
+      c.fillStyle = 'var(--text-dim)'; c.font = '9px var(--font-mono)'; c.textAlign = 'center'; c.textBaseline = 'top';
 
-      const cx = w / 2 + state.panX;
-      const cy = h / 2 + state.panY;
-
-      // X Ruler
+      const cx = w / 2 + state.panX, cy = h / 2 + state.panY;
       const minMmX = Math.floor(((0 - cx) / state.zoom) / MM_TO_BASE_PX);
       const maxMmX = Math.ceil(((w - cx) / state.zoom) / MM_TO_BASE_PX);
+      
       c.beginPath();
       for(let mm = minMmX; mm <= maxMmX; mm++) {
          const screenX = cx + (mm * MM_TO_BASE_PX * state.zoom);
          if (screenX < rulerSize) continue;
-         
-         let tickLength = 3;
-         if (mm % 5 === 0) tickLength = 6;
-         if (mm % 10 === 0) tickLength = 10;
-         
-         c.moveTo(screenX, rulerSize - tickLength);
-         c.lineTo(screenX, rulerSize);
-         
+         let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
+         c.moveTo(screenX, rulerSize - tickLength); c.lineTo(screenX, rulerSize);
          if (mm % 10 === 0 && state.zoom > 0.4) c.fillText(mm, screenX, 2);
       }
       c.stroke();
 
-      // Y Ruler
       const minMmY = Math.floor(((0 - cy) / state.zoom) / MM_TO_BASE_PX);
       const maxMmY = Math.ceil(((h - cy) / state.zoom) / MM_TO_BASE_PX);
       c.beginPath();
       for(let mm = minMmY; mm <= maxMmY; mm++) {
          const screenY = cy + (mm * MM_TO_BASE_PX * state.zoom);
          if (screenY < rulerSize) continue;
-         
-         let tickLength = 3;
-         if (mm % 5 === 0) tickLength = 6;
-         if (mm % 10 === 0) tickLength = 10;
-         
-         c.moveTo(rulerSize - tickLength, screenY);
-         c.lineTo(rulerSize, screenY);
-         
+         let tickLength = mm % 10 === 0 ? 10 : mm % 5 === 0 ? 6 : 3;
+         c.moveTo(rulerSize - tickLength, screenY); c.lineTo(rulerSize, screenY);
          if (mm % 10 === 0 && state.zoom > 0.4) {
-           c.save();
-           c.translate(2, screenY);
-           c.rotate(-Math.PI/2);
-           c.fillText(mm, 0, 0);
-           c.restore();
+           c.save(); c.translate(2, screenY); c.rotate(-Math.PI/2); c.fillText(mm, 0, 0); c.restore();
          }
       }
       c.stroke();
-
-      // Corner Block
-      c.fillStyle = 'var(--bg-panel)';
-      c.fillRect(0, 0, rulerSize, rulerSize);
-      c.strokeRect(0, 0, rulerSize, rulerSize);
+      c.fillStyle = 'var(--bg-panel)'; c.fillRect(0, 0, rulerSize, rulerSize); c.strokeRect(0, 0, rulerSize, rulerSize);
       c.restore();
     }
 
-    // Preflight Matrix Toggle
+    // Preflight
     function togglePreflight() {
       state.isPreflight = !state.isPreflight;
       document.getElementById('btn-preflight').style.display = state.isPreflight ? 'none' : 'flex';
       document.getElementById('btn-exit-preflight').style.display = state.isPreflight ? 'flex' : 'none';
       document.getElementById('nav-controls').style.display = state.isPreflight ? 'none' : 'flex';
-      
-      state.panX = 0; state.panY = 0;
-      state.zoom = state.isPreflight ? 0.25 : 1.0;
+      state.panX = 0; state.panY = 0; state.zoom = state.isPreflight ? 0.25 : 1.0;
       render();
     }
-
     document.getElementById('btn-preflight').addEventListener('click', togglePreflight);
     document.getElementById('btn-exit-preflight').addEventListener('click', togglePreflight);
     window.addEventListener('keydown', (e) => {
@@ -720,12 +535,10 @@
       if (e.key.toLowerCase() === 'p') togglePreflight();
     });
 
-    // Rebuild Logic
+    // Deck Logic
     function rebuildDeckList() {
       deckCards = [];
-      const ranksToUse = state.presetDeck === 'skat-32' 
-        ? ['7', '8', '9', '10', 'B', 'D', 'K', 'A'] : STANDARD_RANKS;
-
+      const ranksToUse = state.presetDeck === 'skat-32' ? ['7', '8', '9', '10', 'B', 'D', 'K', 'A'] : STANDARD_RANKS;
       if (state.deckMode === 'preset') {
         for (const suit of SUITS) for (const r of ranksToUse) deckCards.push({ suit: suit.id, rank: r });
       } else {
@@ -735,16 +548,11 @@
           rIdx++; if (rIdx >= ranksToUse.length) { rIdx = 0; sIdx++; }
         }
       }
-
-      if (state.addJokers) {
-        for (let j = 0; j < state.jokerCount; j++) deckCards.push({ suit: 'hearts', rank: 'JOKER' });
-      }
-
+      if (state.addJokers) { for (let j = 0; j < state.jokerCount; j++) deckCards.push({ suit: 'hearts', rank: 'JOKER' }); }
       document.getElementById('counter-calc').innerText = deckCards.length * (state.addBacks ? 2 : 1);
       updateCardIndicator();
     }
 
-    // Core Matrix Layout Parameters
     const PIP_LAYOUTS = {
       'A': [[0.5, 0.5, false]],
       '2': [[0.5, 0.22, false], [0.5, 0.78, true]],
@@ -758,199 +566,97 @@
       '10': [[0.32, 0.18, false], [0.68, 0.18, false], [0.5, 0.28, false], [0.32, 0.38, false], [0.68, 0.38, false], [0.32, 0.62, true],  [0.68, 0.62, true], [0.5, 0.72, true], [0.32, 0.82, true],  [0.68, 0.82, true]]
     };
 
-    const canvas = document.getElementById('stage');
-    const ctx = canvas.getContext('2d');
-    const container = document.getElementById('canvas-wrapper');
-
-    function resizeCanvas() {
-      const dpr = window.devicePixelRatio || 1;
-      canvas.width = container.clientWidth * dpr;
-      canvas.height = container.clientHeight * dpr;
-      render();
-    }
+    const canvas = document.getElementById('stage'), ctx = canvas.getContext('2d'), container = document.getElementById('canvas-wrapper');
+    function resizeCanvas() { const dpr = window.devicePixelRatio || 1; canvas.width = container.clientWidth * dpr; canvas.height = container.clientHeight * dpr; render(); }
     window.addEventListener('resize', resizeCanvas);
-
     function triggerRender() { render(); }
     document.getElementById('val-snap').addEventListener('change', triggerRender);
 
     function render() {
-      const layoutProps = {
-        valSnap: document.getElementById('val-snap').checked,
-        valScale: parseFloat(document.getElementById('val-scale').value) / 100 || 1,
-        pipScale: parseFloat(document.getElementById('pip-scale').value) / 100 || 1,
-        pipSpacing: parseFloat(document.getElementById('pip-spacing').value) / 100 || 1
-      };
-
+      const layout = { valSnap: document.getElementById('val-snap').checked, valScale: parseFloat(document.getElementById('val-scale').value) / 100 || 1, pipScale: parseFloat(document.getElementById('pip-scale').value) / 100 || 1, pipSpacing: parseFloat(document.getElementById('pip-spacing').value) / 100 || 1 };
       const dpr = window.devicePixelRatio || 1;
-      ctx.save();
-      ctx.scale(dpr, dpr);
-      ctx.clearRect(0, 0, container.clientWidth, container.clientHeight);
-
-      const cx = container.clientWidth / 2 + state.panX;
-      const cy = container.clientHeight / 2 + state.panY;
-      ctx.translate(cx, cy);
-      ctx.scale(state.zoom, state.zoom);
+      ctx.save(); ctx.scale(dpr, dpr); ctx.clearRect(0, 0, container.clientWidth, container.clientHeight);
+      const cx = container.clientWidth / 2 + state.panX, cy = container.clientHeight / 2 + state.panY;
+      ctx.translate(cx, cy); ctx.scale(state.zoom, state.zoom);
 
       if (deckCards.length > 0) {
         if (state.isPreflight) {
-          // Preflight Grid Calculation
-          const cols = Math.ceil(Math.sqrt(deckCards.length));
-          const gap = 10 * MM_TO_BASE_PX;
-          const cellW = (state.cardW + state.bleed.left + state.bleed.right) * MM_TO_BASE_PX;
-          const cellH = (state.cardH + state.bleed.top + state.bleed.bottom) * MM_TO_BASE_PX;
-          
-          const gridW = cols * cellW + (cols - 1) * gap;
-          const rows = Math.ceil(deckCards.length / cols);
-          const gridH = rows * cellH + (rows - 1) * gap;
-          
-          const startX = -gridW / 2 + cellW / 2;
-          const startY = -gridH / 2 + cellH / 2;
-          
+          const cols = Math.ceil(Math.sqrt(deckCards.length)), gap = 10 * MM_TO_BASE_PX;
+          const cellW = (state.cardW + state.bleed.left + state.bleed.right) * MM_TO_BASE_PX, cellH = (state.cardH + state.bleed.top + state.bleed.bottom) * MM_TO_BASE_PX;
+          const gridW = cols * cellW + (cols - 1) * gap, rows = Math.ceil(deckCards.length / cols), gridH = rows * cellH + (rows - 1) * gap;
+          const startX = -gridW / 2 + cellW / 2, startY = -gridH / 2 + cellH / 2;
           deckCards.forEach((card, idx) => {
-             const px = startX + (idx % cols) * (cellW + gap);
-             const py = startY + Math.floor(idx / cols) * (cellH + gap);
-             ctx.save();
-             ctx.translate(px, py);
-             drawCard(ctx, card, layoutProps);
-             ctx.restore();
+             const px = startX + (idx % cols) * (cellW + gap), py = startY + Math.floor(idx / cols) * (cellH + gap);
+             ctx.save(); ctx.translate(px, py); drawCard(ctx, card, layout); ctx.restore();
           });
-        } else {
-          drawCard(ctx, deckCards[state.activeCardIndex], layoutProps);
-        }
+        } else { drawCard(ctx, deckCards[state.activeCardIndex], layout); }
       }
       ctx.restore();
-      
-      // Global Workspace Rulers
       drawRulers(ctx, container.clientWidth, container.clientHeight);
     }
 
     function drawCard(c, card, layout) {
       const wPx = state.cardW * MM_TO_BASE_PX, hPx = state.cardH * MM_TO_BASE_PX;
-      const blTop = state.bleed.top * MM_TO_BASE_PX, blBot = state.bleed.bottom * MM_TO_BASE_PX;
-      const blL = state.bleed.left * MM_TO_BASE_PX, blR = state.bleed.right * MM_TO_BASE_PX;
-      const mgTop = state.margin.top * MM_TO_BASE_PX, mgBot = state.margin.bottom * MM_TO_BASE_PX;
-      const mgL = state.margin.left * MM_TO_BASE_PX, mgR = state.margin.right * MM_TO_BASE_PX;
+      const blTop = state.bleed.top * MM_TO_BASE_PX, blBot = state.bleed.bottom * MM_TO_BASE_PX, blL = state.bleed.left * MM_TO_BASE_PX, blR = state.bleed.right * MM_TO_BASE_PX;
+      const mgTop = state.margin.top * MM_TO_BASE_PX, mgBot = state.margin.bottom * MM_TO_BASE_PX, mgL = state.margin.left * MM_TO_BASE_PX, mgR = state.margin.right * MM_TO_BASE_PX;
+      const totalW = wPx + blL + blR, totalH = hPx + blTop + blBot, startX = -wPx / 2, startY = -hPx / 2;
 
-      const totalW = wPx + blL + blR, totalH = hPx + blTop + blBot;
-      const startX = -wPx / 2, startY = -hPx / 2;
-
-      // Bleed Area Box
-      c.fillStyle = '#ffffff';
-      c.fillRect(startX - blL, startY - blTop, totalW, totalH);
-
-      // Bleed Guide (Red Dashed) & Trim Guide (Black Solid)
+      c.fillStyle = '#ffffff'; c.fillRect(startX - blL, startY - blTop, totalW, totalH);
       if (!state.isPreflight) {
-        c.strokeStyle = 'rgba(255, 68, 68, 0.4)'; c.lineWidth = 1; c.setLineDash([4, 4]);
-        c.strokeRect(startX - blL, startY - blTop, totalW, totalH);
-        c.strokeStyle = 'rgba(0, 0, 0, 0.85)'; c.setLineDash([]);
-        c.strokeRect(startX, startY, wPx, hPx);
-        // Safe Margin Guide (Magenta)
-        c.strokeStyle = 'rgba(217, 27, 217, 0.35)';
-        c.strokeRect(startX + mgL, startY + mgTop, wPx - mgL - mgR, hPx - mgTop - mgBot);
+        c.strokeStyle = 'rgba(255, 68, 68, 0.4)'; c.lineWidth = 1; c.setLineDash([4, 4]); c.strokeRect(startX - blL, startY - blTop, totalW, totalH);
+        c.strokeStyle = 'rgba(0, 0, 0, 0.85)'; c.setLineDash([]); c.strokeRect(startX, startY, wPx, hPx);
+        c.strokeStyle = 'rgba(217, 27, 217, 0.35)'; c.strokeRect(startX + mgL, startY + mgTop, wPx - mgL - mgR, hPx - mgTop - mgBot);
       }
-
       drawCropMarks(c, startX, startY, wPx, hPx);
 
-      const safeW = wPx - mgL - mgR, safeH = hPx - mgTop - mgBot;
-      const safeX = startX + mgL, safeY = startY + mgTop;
-      const suitObj = SUITS.find(s => s.id === card.suit);
-      
-      const pad = layout.valSnap ? 0 : (2 * MM_TO_BASE_PX);
+      const safeW = wPx - mgL - mgR, safeH = hPx - mgTop - mgBot, safeX = startX + mgL, safeY = startY + mgTop;
+      const suitObj = SUITS.find(s => s.id === card.suit), pad = layout.valSnap ? 0 : (2 * MM_TO_BASE_PX);
 
-      // Continental 4-Corner Rotational Symmetry Index Mapping
-      drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + pad, 0, false, layout); // TL
-      drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + pad, 0, true, layout); // TR
-      drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + safeH - pad, Math.PI, true, layout); // BL (TR 180deg)
-      drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + safeH - pad, Math.PI, false, layout); // BR (TL 180deg)
+      drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + pad, 0, false, layout);
+      drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + pad, 0, true, layout);
+      drawIndexStack(c, card.rank, card.suit, safeX + pad, safeY + safeH - pad, Math.PI, true, layout);
+      drawIndexStack(c, card.rank, card.suit, safeX + safeW - pad, safeY + safeH - pad, Math.PI, false, layout);
 
-      if (['B', 'D', 'K', 'JOKER'].includes(card.rank)) {
-        drawCourtArt(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout);
-      } else if (PIP_LAYOUTS[card.rank]) {
-        drawPipMatrix(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout);
-      }
+      if (['B', 'D', 'K', 'JOKER'].includes(card.rank)) drawCourtArt(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout);
+      else if (PIP_LAYOUTS[card.rank]) drawPipMatrix(c, card.rank, safeX, safeY, safeW, safeH, suitObj, layout);
     }
 
     function drawIndexStack(c, rank, suitId, x, y, rotation, alignRight, layout) {
       c.save(); c.translate(x, y); c.rotate(rotation);
-      const suitObj = SUITS.find(s => s.id === suitId);
-      const stackW = 8 * MM_TO_BASE_PX * layout.valScale;
-      const offsetX = alignRight ? -stackW : 0;
-
-      if (state.rankImages[rank]) {
-        c.drawImage(state.rankImages[rank], offsetX, 0, stackW, stackW);
-      } else {
-        c.fillStyle = suitObj.color;
-        c.font = `700 ${11 * MM_TO_BASE_PX * layout.valScale}px 'IBM Plex Sans'`;
-        c.textAlign = alignRight ? 'right' : 'left'; c.textBaseline = 'top';
-        c.fillText(rank, 0, 0);
-      }
-
-      const pipY = 12 * MM_TO_BASE_PX * layout.valScale;
-      const pipSize = 5 * MM_TO_BASE_PX * layout.valScale;
-      if (state.suitImages[suitId]) {
-        c.drawImage(state.suitImages[suitId], alignRight ? -pipSize : 0, pipY, pipSize, pipSize);
-      } else {
-        c.fillStyle = suitObj.color;
-        c.font = `${6 * MM_TO_BASE_PX * layout.valScale}px 'IBM Plex Sans'`;
-        c.textAlign = alignRight ? 'right' : 'left'; c.textBaseline = 'top';
-        c.fillText(suitObj.symbol, 0, pipY);
-      }
+      const suitObj = SUITS.find(s => s.id === suitId), stackW = 8 * MM_TO_BASE_PX * layout.valScale, offsetX = alignRight ? -stackW : 0;
+      if (state.rankImages[rank]) c.drawImage(state.rankImages[rank], offsetX, 0, stackW, stackW);
+      else { c.fillStyle = suitObj.color; c.font = `700 ${11 * MM_TO_BASE_PX * layout.valScale}px 'IBM Plex Sans'`; c.textAlign = alignRight ? 'right' : 'left'; c.textBaseline = 'top'; c.fillText(rank, 0, 0); }
+      const pipY = 12 * MM_TO_BASE_PX * layout.valScale, pipSize = 5 * MM_TO_BASE_PX * layout.valScale;
+      if (state.suitImages[suitId]) c.drawImage(state.suitImages[suitId], alignRight ? -pipSize : 0, pipY, pipSize, pipSize);
+      else { c.fillStyle = suitObj.color; c.font = `${6 * MM_TO_BASE_PX * layout.valScale}px 'IBM Plex Sans'`; c.textAlign = alignRight ? 'right' : 'left'; c.textBaseline = 'top'; c.fillText(suitObj.symbol, 0, pipY); }
       c.restore();
     }
 
     function drawPipMatrix(c, rank, sx, sy, sw, sh, suitObj, layout) {
-      const coords = PIP_LAYOUTS[rank];
-      if (!coords) return;
-      const suitImg = state.suitImages[suitObj.id];
-      const pipBaseDim = (rank === 'A' ? 14 : 7.5) * MM_TO_BASE_PX * layout.pipScale;
-
-      const innerPadX = 7 * MM_TO_BASE_PX, innerPadY = 10 * MM_TO_BASE_PX;
-      const fieldX = sx + innerPadX, fieldY = sy + innerPadY;
-      const fieldW = sw - innerPadX * 2, fieldH = sh - innerPadY * 2;
-
+      const coords = PIP_LAYOUTS[rank]; if (!coords) return;
+      const suitImg = state.suitImages[suitObj.id], pipBaseDim = (rank === 'A' ? 14 : 7.5) * MM_TO_BASE_PX * layout.pipScale;
+      const innerPadX = 7 * MM_TO_BASE_PX, innerPadY = 10 * MM_TO_BASE_PX, fieldX = sx + innerPadX, fieldY = sy + innerPadY, fieldW = sw - innerPadX * 2, fieldH = sh - innerPadY * 2;
       coords.forEach(([u, v, flipY]) => {
-        // Spacing algorithm (Push/Pull from center matrix origin)
-        const nu = 0.5 + (u - 0.5) * layout.pipSpacing;
-        const nv = 0.5 + (v - 0.5) * layout.pipSpacing;
-        const px = fieldX + fieldW * nu, py = fieldY + fieldH * nv;
-
+        const nu = 0.5 + (u - 0.5) * layout.pipSpacing, nv = 0.5 + (v - 0.5) * layout.pipSpacing, px = fieldX + fieldW * nu, py = fieldY + fieldH * nv;
         c.save(); c.translate(px, py); if (flipY) c.rotate(Math.PI);
-        if (suitImg) {
-          c.drawImage(suitImg, -pipBaseDim / 2, -pipBaseDim / 2, pipBaseDim, pipBaseDim);
-        } else {
-          c.fillStyle = suitObj.color;
-          c.font = `${pipBaseDim}px 'IBM Plex Sans'`;
-          c.textAlign = 'center'; c.textBaseline = 'middle';
-          c.fillText(suitObj.symbol, 0, 0);
-        }
+        if (suitImg) c.drawImage(suitImg, -pipBaseDim / 2, -pipBaseDim / 2, pipBaseDim, pipBaseDim);
+        else { c.fillStyle = suitObj.color; c.font = `${pipBaseDim}px 'IBM Plex Sans'`; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText(suitObj.symbol, 0, 0); }
         c.restore();
       });
     }
 
     function drawCourtArt(c, rank, sx, sy, sw, sh, suitObj, layout) {
-      const pad = 8 * MM_TO_BASE_PX;
-      const frameX = sx + pad, frameY = sy + pad;
-      const frameW = sw - pad * 2, frameH = sh - pad * 2;
-      c.save();
-      c.strokeStyle = suitObj.color; c.lineWidth = 1; c.strokeRect(frameX, frameY, frameW, frameH);
-      c.fillStyle = suitObj.color;
-      c.font = `600 ${18 * MM_TO_BASE_PX * layout.pipScale}px 'IBM Plex Sans'`;
-      c.textAlign = 'center'; c.textBaseline = 'middle';
+      const pad = 8 * MM_TO_BASE_PX, frameX = sx + pad, frameY = sy + pad, frameW = sw - pad * 2, frameH = sh - pad * 2;
+      c.save(); c.strokeStyle = suitObj.color; c.lineWidth = 1; c.strokeRect(frameX, frameY, frameW, frameH);
+      c.fillStyle = suitObj.color; c.font = `600 ${18 * MM_TO_BASE_PX * layout.pipScale}px 'IBM Plex Sans'`; c.textAlign = 'center'; c.textBaseline = 'middle';
       c.fillText(rank, frameX + frameW / 2, frameY + frameH / 2);
-      c.beginPath(); c.moveTo(frameX, frameY + frameH / 2); c.lineTo(frameX + frameW, frameY + frameH / 2);
-      c.setLineDash([2, 2]); c.stroke();
-      c.restore();
+      c.beginPath(); c.moveTo(frameX, frameY + frameH / 2); c.lineTo(frameX + frameW, frameY + frameH / 2); c.setLineDash([2, 2]); c.stroke(); c.restore();
     }
 
     function drawCropMarks(c, x, y, w, h) {
       const markLength = 5 * MM_TO_BASE_PX, markOffset = 1.5 * MM_TO_BASE_PX;
       c.save(); c.strokeStyle = '#000000'; c.lineWidth = 0.5;
-      const corners = [
-        { px: x, py: y, dx1: -1, dy1: 0, dx2: 0, dy2: -1 }, // TL
-        { px: x + w, py: y, dx1: 1, dy1: 0, dx2: 0, dy2: -1 }, // TR
-        { px: x, py: y + h, dx1: -1, dy1: 0, dx2: 0, dy2: 1 }, // BL
-        { px: x + w, py: y + h, dx1: 1, dy1: 0, dx2: 0, dy2: 1 }  // BR
-      ];
+      const corners = [{ px: x, py: y, dx1: -1, dy1: 0, dx2: 0, dy2: -1 }, { px: x + w, py: y, dx1: 1, dy1: 0, dx2: 0, dy2: -1 }, { px: x, py: y + h, dx1: -1, dy1: 0, dx2: 0, dy2: 1 }, { px: x + w, py: y + h, dx1: 1, dy1: 0, dx2: 0, dy2: 1 }];
       corners.forEach(cn => {
         c.beginPath(); c.moveTo(cn.px + cn.dx1 * markOffset, cn.py); c.lineTo(cn.px + cn.dx1 * (markOffset + markLength), cn.py); c.stroke();
         c.beginPath(); c.moveTo(cn.px, cn.py + cn.dy2 * markOffset); c.lineTo(cn.px, cn.py + cn.dy2 * (markOffset + markLength)); c.stroke();
@@ -964,13 +670,8 @@
       document.getElementById('card-indicator').innerText = `Card ${(state.activeCardIndex + 1).toString().padStart(2, '0')} / ${deckCards.length.toString().padStart(2, '0')}`;
       render();
     }
-
-    document.getElementById('next-card').addEventListener('click', () => {
-      if (deckCards.length > 0) { state.activeCardIndex = (state.activeCardIndex + 1) % deckCards.length; updateCardIndicator(); }
-    });
-    document.getElementById('prev-card').addEventListener('click', () => {
-      if (deckCards.length > 0) { state.activeCardIndex = (state.activeCardIndex - 1 + deckCards.length) % deckCards.length; updateCardIndicator(); }
-    });
+    document.getElementById('next-card').addEventListener('click', () => { if (deckCards.length > 0) { state.activeCardIndex = (state.activeCardIndex + 1) % deckCards.length; updateCardIndicator(); } });
+    document.getElementById('prev-card').addEventListener('click', () => { if (deckCards.length > 0) { state.activeCardIndex = (state.activeCardIndex - 1 + deckCards.length) % deckCards.length; updateCardIndicator(); } });
 
     container.addEventListener('wheel', (e) => {
       e.preventDefault();
@@ -978,13 +679,8 @@
       else { state.panX -= e.deltaX; state.panY -= e.deltaY; }
       render();
     }, { passive: false });
-
-    container.addEventListener('pointerdown', (e) => {
-      state.isPanning = true; state.startX = e.clientX - state.panX; state.startY = e.clientY - state.panY;
-    });
-    window.addEventListener('pointermove', (e) => {
-      if (state.isPanning) { state.panX = e.clientX - state.startX; state.panY = e.clientY - state.startY; render(); }
-    });
+    container.addEventListener('pointerdown', (e) => { state.isPanning = true; state.startX = e.clientX - state.panX; state.startY = e.clientY - state.panY; });
+    window.addEventListener('pointermove', (e) => { if (state.isPanning) { state.panX = e.clientX - state.startX; state.panY = e.clientY - state.startY; render(); } });
     window.addEventListener('pointerup', () => state.isPanning = false);
 
     // Event Bindings
@@ -993,20 +689,12 @@
       if (e.target.value === 'french') { state.cardW = 59; state.cardH = 91; customRow.style.display = 'none'; }
       else if (e.target.value === 'poker') { state.cardW = 63.5; state.cardH = 88.9; customRow.style.display = 'none'; }
       else if (e.target.value === 'tarot') { state.cardW = 70; state.cardH = 120; customRow.style.display = 'none'; }
-      else customRow.style.display = 'grid';
-      render();
+      else customRow.style.display = 'grid'; render();
     });
-    document.getElementById('deck-mode').addEventListener('change', (e) => {
-      state.deckMode = e.target.value;
-      document.getElementById('deck-preset-wrap').style.display = e.target.value === 'preset' ? 'block' : 'none';
-      document.getElementById('deck-count-wrap').style.display = e.target.value === 'count' ? 'block' : 'none';
-      rebuildDeckList();
-    });
+    document.getElementById('deck-mode').addEventListener('change', (e) => { state.deckMode = e.target.value; document.getElementById('deck-preset-wrap').style.display = e.target.value === 'preset' ? 'block' : 'none'; document.getElementById('deck-count-wrap').style.display = e.target.value === 'count' ? 'block' : 'none'; rebuildDeckList(); });
     document.getElementById('deck-preset-select').addEventListener('change', (e) => { state.presetDeck = e.target.value; rebuildDeckList(); });
     document.getElementById('deck-count-input').addEventListener('input', (e) => { state.cardCount = parseInt(e.target.value) || 1; rebuildDeckList(); });
-    document.getElementById('toggle-joker').addEventListener('change', (e) => {
-      state.addJokers = e.target.checked; document.getElementById('joker-slider-wrap').style.display = e.target.checked ? 'block' : 'none'; rebuildDeckList();
-    });
+    document.getElementById('toggle-joker').addEventListener('change', (e) => { state.addJokers = e.target.checked; document.getElementById('joker-slider-wrap').style.display = e.target.checked ? 'block' : 'none'; rebuildDeckList(); });
     document.getElementById('joker-range').addEventListener('input', (e) => { state.jokerCount = parseInt(e.target.value); document.getElementById('joker-val').innerText = state.jokerCount; rebuildDeckList(); });
     document.getElementById('toggle-backs').addEventListener('change', (e) => { state.addBacks = e.target.checked; rebuildDeckList(); });
 
@@ -1021,9 +709,8 @@
       });
     });
 
-    // Upload Pipeline
-    const dropNumbers = document.getElementById('drop-numbers');
-    const inputNumbers = document.getElementById('input-numbers');
+    // Asset Pipeline Files
+    const dropNumbers = document.getElementById('drop-numbers'), inputNumbers = document.getElementById('input-numbers');
     dropNumbers.addEventListener('click', () => inputNumbers.click());
     dropNumbers.addEventListener('dragover', (e) => { e.preventDefault(); dropNumbers.classList.add('dragover'); });
     dropNumbers.addEventListener('dragleave', () => dropNumbers.classList.remove('dragover'));
@@ -1038,6 +725,9 @@
         reader.onload = (ev) => {
           const img = new Image();
           img.onload = () => {
+            // Validation Trigger
+            if (!validateAsset(img)) { triggerHelpError(); return; }
+
             let matchedRank = name;
             if (name === '01' || name === '1') matchedRank = 'A';
             if (name.startsWith('0')) matchedRank = name.replace('0', '');
@@ -1062,7 +752,12 @@
       const reader = new FileReader();
       reader.onload = (ev) => {
         const img = new Image();
-        img.onload = () => { state.suitImages[suit] = img; document.getElementById(`suit-drop-${suit}`).classList.add('has-file'); refreshAssetInventory(); render(); };
+        img.onload = () => {
+          // Validation Trigger
+          if (!validateAsset(img)) { triggerHelpError(); return; }
+
+          state.suitImages[suit] = img; document.getElementById(`suit-drop-${suit}`).classList.add('has-file'); refreshAssetInventory(); render();
+        };
         img.src = ev.target.result;
       }; reader.readAsDataURL(file);
     }
@@ -1077,41 +772,25 @@
       });
     }
 
-    // PDF Compilation
+    // PDF Export
     async function generatePDF(isBatch = false) {
       const { jsPDF } = window.jspdf;
-      const dpi = parseInt(document.getElementById('doc-dpi').value);
-      const standard = document.getElementById('pdf-standard').value;
-
-      const slugMargin = 8;
-      const pageW = state.cardW + (state.bleed.left + state.bleed.right) + slugMargin * 2;
-      const pageH = state.cardH + (state.bleed.top + state.bleed.bottom) + slugMargin * 2;
+      const dpi = parseInt(document.getElementById('doc-dpi').value), standard = document.getElementById('pdf-standard').value;
+      const slugMargin = 8, pageW = state.cardW + (state.bleed.left + state.bleed.right) + slugMargin * 2, pageH = state.cardH + (state.bleed.top + state.bleed.bottom) + slugMargin * 2;
       const pdf = new jsPDF({ orientation: pageW > pageH ? 'landscape' : 'portrait', unit: 'mm', format: [pageW, pageH], compress: true });
-
       const cardsToRun = isBatch ? deckCards : [deckCards[state.activeCardIndex]];
-      const printScale = dpi / 25.4;
-      const offCanvas = document.createElement('canvas');
+      const printScale = dpi / 25.4, offCanvas = document.createElement('canvas');
       offCanvas.width = Math.round(pageW * printScale); offCanvas.height = Math.round(pageH * printScale);
       const offCtx = offCanvas.getContext('2d');
-
-      const layoutProps = {
-        valSnap: document.getElementById('val-snap').checked,
-        valScale: parseFloat(document.getElementById('val-scale').value) / 100 || 1,
-        pipScale: parseFloat(document.getElementById('pip-scale').value) / 100 || 1,
-        pipSpacing: parseFloat(document.getElementById('pip-spacing').value) / 100 || 1
-      };
+      const layoutProps = { valSnap: document.getElementById('val-snap').checked, valScale: parseFloat(document.getElementById('val-scale').value) / 100 || 1, pipScale: parseFloat(document.getElementById('pip-scale').value) / 100 || 1, pipSpacing: parseFloat(document.getElementById('pip-spacing').value) / 100 || 1 };
 
       for (let i = 0; i < cardsToRun.length; i++) {
         if (i > 0) pdf.addPage([pageW, pageH]);
         offCtx.save(); offCtx.scale(printScale, printScale); offCtx.fillStyle = '#ffffff'; offCtx.fillRect(0, 0, pageW, pageH);
-        offCtx.translate(pageW / 2, pageH / 2);
-        drawCard(offCtx, cardsToRun[i], layoutProps);
-        offCtx.restore();
+        offCtx.translate(pageW / 2, pageH / 2); drawCard(offCtx, cardsToRun[i], layoutProps); offCtx.restore();
         pdf.addImage(offCanvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, pageW, pageH);
-
         if (isBatch && state.addBacks) {
-          pdf.addPage([pageW, pageH]);
-          offCtx.save(); offCtx.scale(printScale, printScale); offCtx.fillStyle = '#ffffff'; offCtx.fillRect(0, 0, pageW, pageH);
+          pdf.addPage([pageW, pageH]); offCtx.save(); offCtx.scale(printScale, printScale); offCtx.fillStyle = '#ffffff'; offCtx.fillRect(0, 0, pageW, pageH);
           offCtx.translate(pageW / 2, pageH / 2); drawCardBack(offCtx); offCtx.restore();
           pdf.addImage(offCanvas.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, pageW, pageH);
         }
@@ -1120,19 +799,14 @@
     }
 
     function drawCardBack(c) {
-      const wPx = state.cardW * MM_TO_BASE_PX, hPx = state.cardH * MM_TO_BASE_PX;
-      const blTop = state.bleed.top * MM_TO_BASE_PX, blBot = state.bleed.bottom * MM_TO_BASE_PX;
-      const blL = state.bleed.left * MM_TO_BASE_PX, blR = state.bleed.right * MM_TO_BASE_PX;
+      const wPx = state.cardW * MM_TO_BASE_PX, hPx = state.cardH * MM_TO_BASE_PX, blTop = state.bleed.top * MM_TO_BASE_PX, blBot = state.bleed.bottom * MM_TO_BASE_PX, blL = state.bleed.left * MM_TO_BASE_PX, blR = state.bleed.right * MM_TO_BASE_PX;
       const startX = -wPx / 2, startY = -hPx / 2;
       c.fillStyle = '#18181b'; c.fillRect(startX - blL, startY - blTop, wPx + blL + blR, hPx + blTop + blBot);
       c.strokeStyle = '#ffffff'; c.lineWidth = 1; c.strokeRect(startX + 6, startY + 6, wPx - 12, hPx - 12);
       drawCropMarks(c, startX, startY, wPx, hPx);
     }
+    document.getElementById('btn-export-single').addEventListener('click', () => generatePDF(false)); document.getElementById('btn-export-batch').addEventListener('click', () => generatePDF(true));
 
-    document.getElementById('btn-export-single').addEventListener('click', () => generatePDF(false));
-    document.getElementById('btn-export-batch').addEventListener('click', () => generatePDF(true));
-
-    // Boot
     refreshAssetInventory(); rebuildDeckList(); resizeCanvas();
   </script>
 </body>
